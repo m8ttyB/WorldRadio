@@ -57,6 +57,81 @@ async def get_status_checks():
 # Include the router in the main app
 app.include_router(api_router)
 
+# Radio Browser API proxy endpoints
+RADIO_API_BASE = "https://de1.api.radio-browser.info"
+
+@api_router.get("/radio/stations/popular")
+async def get_popular_stations(limit: int = 100):
+    """Get popular radio stations"""
+    try:
+        async with httpx.AsyncClient(timeout=30.0) as client:
+            response = await client.get(
+                f"{RADIO_API_BASE}/json/stations/topvote",
+                params={"limit": limit, "hidebroken": "true"},
+                headers={"User-Agent": "GlobalRadioApp/1.0"}
+            )
+            response.raise_for_status()
+            return response.json()
+    except Exception as e:
+        logger.error(f"Error fetching popular stations: {e}")
+        raise HTTPException(status_code=500, detail="Failed to fetch stations")
+
+@api_router.get("/radio/stations/search")
+async def search_stations(
+    name: Optional[str] = None,
+    country: Optional[str] = None,
+    limit: int = 100
+):
+    """Search radio stations"""
+    try:
+        params = {"limit": limit, "hidebroken": "true"}
+        if name:
+            params["name"] = name
+        if country:
+            params["country"] = country
+            
+        async with httpx.AsyncClient(timeout=30.0) as client:
+            response = await client.get(
+                f"{RADIO_API_BASE}/json/stations/search",
+                params=params,
+                headers={"User-Agent": "GlobalRadioApp/1.0"}
+            )
+            response.raise_for_status()
+            return response.json()
+    except Exception as e:
+        logger.error(f"Error searching stations: {e}")
+        raise HTTPException(status_code=500, detail="Failed to search stations")
+
+@api_router.get("/radio/countries")
+async def get_countries():
+    """Get list of countries with radio stations"""
+    try:
+        async with httpx.AsyncClient(timeout=30.0) as client:
+            response = await client.get(
+                f"{RADIO_API_BASE}/json/countries",
+                params={"hidebroken": "true"},
+                headers={"User-Agent": "GlobalRadioApp/1.0"}
+            )
+            response.raise_for_status()
+            return response.json()
+    except Exception as e:
+        logger.error(f"Error fetching countries: {e}")
+        raise HTTPException(status_code=500, detail="Failed to fetch countries")
+
+@api_router.post("/radio/stations/{station_uuid}/click")
+async def register_station_click(station_uuid: str):
+    """Register a click for a radio station"""
+    try:
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            response = await client.post(
+                f"{RADIO_API_BASE}/json/url/{station_uuid}",
+                headers={"User-Agent": "GlobalRadioApp/1.0"}
+            )
+            return {"success": True}
+    except Exception as e:
+        logger.warning(f"Error registering click for {station_uuid}: {e}")
+        return {"success": False}
+
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
