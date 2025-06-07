@@ -410,7 +410,7 @@ function App() {
         </div>
 
         {!showFavorites && (
-          <form onSubmit={handleSearch} className="bg-gray-50 rounded-lg p-6 mb-6">
+          <form onSubmit={(e) => { e.preventDefault(); performSearch(); }} className="bg-gray-50 rounded-lg p-6 mb-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
               <input
                 type="text"
