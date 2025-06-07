@@ -14,6 +14,7 @@ function App() {
   const [searchTerm, setSearchTerm] = useState('');
   const [error, setError] = useState('');
   const [favorites, setFavorites] = useState([]);
+  const [favoritesLoaded, setFavoritesLoaded] = useState(false);
   const [showFavorites, setShowFavorites] = useState(false);
   const audioRef = useRef(null);
 
