@@ -10,11 +10,11 @@ A minimalist worldwide radio station streaming website that allows users to disc
 ## ✨ Features
 
 - 🌍 **Worldwide Stations**: Browse radio stations from countries around the world
-- 🎵 **Live Streaming**: Click-to-play audio streaming with built-in controls
-- 🔍 **Smart Search**: Search stations by name or filter by country
+- 🎵 **Live Streaming**: Click-to-play audio streaming with floating controls
+- 🔍 **Real-Time Search**: Type-as-you-search with instant country filtering
+- ❤️ **Personal Favorites**: Save and manage favorite stations with persistence
 - 📱 **Responsive Design**: Clean, minimalist interface that works on all devices
-- ⚡ **Fast Loading**: Optimized API with multiple server fallbacks
-- 🎛️ **Audio Controls**: Play, pause, stop, and switch between stations seamlessly
+- ⚡ **Fast Performance**: Optimized with debounced search and smart caching
 
 ## 🚀 Tech Stack
 
@@ -22,16 +22,16 @@ A minimalist worldwide radio station streaming website that allows users to disc
 - **React 19** - Modern React with hooks and functional components
 - **CSS3** - Custom minimalist styling with responsive design
 - **HTML5 Audio API** - Native audio streaming capabilities
+- **LocalStorage** - Persistent favorites management
 
 ### Backend
 - **FastAPI** - High-performance Python web framework
 - **HTTPX** - Async HTTP client for external API calls
 - **Motor** - Async MongoDB driver
-- **Uvicorn** - ASGI server for production
+- **Uvicorn** - ASGI server
 
 ### External APIs
 - **Radio Browser API** - Community-driven radio station database
-- Multiple server endpoints for reliability
 
 ## 📋 Prerequisites
 
@@ -77,8 +77,9 @@ cp .env.example .env
 MONGO_URL=mongodb://localhost:27017
 DB_NAME=global_radio
 
-# Optional: API Keys (if needed)
-# RADIO_API_KEY=your_api_key_here
+# Development Settings
+DEBUG=true
+LOG_LEVEL=INFO
 ```
 
 ### 3. Frontend Setup
@@ -158,7 +159,6 @@ global-radio/
 │   ├── requirements.txt   # Python dependencies
 │   └── .env              # Backend environment variables
 │
-├── tests/                 # Test files
 ├── scripts/              # Utility scripts
 └── README.md             # This file
 ```
@@ -174,7 +174,6 @@ global-radio/
 ### System
 - `GET /api/` - Health check
 - `GET /api/status` - Get system status
-- `POST /api/status` - Create status check
 
 ### Example API Usage
 
@@ -192,189 +191,31 @@ curl "http://localhost:8001/api/radio/stations/search?country=United%20Kingdom"
 curl "http://localhost:8001/api/radio/countries"
 ```
 
-## 🚀 Deployment
-
-### Using Docker (Recommended)
-
-#### 1. Create Docker Files
-
-**Dockerfile.backend**
-```dockerfile
-FROM python:3.11-slim
-
-WORKDIR /app
-COPY backend/requirements.txt .
-RUN pip install -r requirements.txt
-
-COPY backend/ .
-CMD ["uvicorn", "server:app", "--host", "0.0.0.0", "--port", "8001"]
-```
-
-**Dockerfile.frontend**
-```dockerfile
-FROM node:18-alpine as builder
-
-WORKDIR /app
-COPY frontend/package.json frontend/yarn.lock ./
-RUN yarn install
-
-COPY frontend/ .
-RUN yarn build
-
-FROM nginx:alpine
-COPY --from=builder /app/build /usr/share/nginx/html
-COPY nginx.conf /etc/nginx/nginx.conf
-```
-
-#### 2. Docker Compose
-
-**docker-compose.yml**
-```yaml
-version: '3.8'
-
-services:
-  backend:
-    build:
-      context: .
-      dockerfile: Dockerfile.backend
-    ports:
-      - "8001:8001"
-    environment:
-      - MONGO_URL=mongodb://mongodb:27017
-      - DB_NAME=global_radio
-    depends_on:
-      - mongodb
-
-  frontend:
-    build:
-      context: .
-      dockerfile: Dockerfile.frontend
-    ports:
-      - "3000:80"
-    environment:
-      - REACT_APP_BACKEND_URL=http://localhost:8001
-
-  mongodb:
-    image: mongo:latest
-    ports:
-      - "27017:27017"
-    volumes:
-      - mongodb_data:/data/db
-
-volumes:
-  mongodb_data:
-```
-
-#### 3. Deploy
-
-```bash
-# Build and start services
-docker-compose up -d
-
-# View logs
-docker-compose logs -f
-
-# Stop services
-docker-compose down
-```
-
-### Manual Deployment
-
-#### 1. Server Setup
-```bash
-# Install dependencies
-sudo apt update
-sudo apt install python3 python3-pip nodejs npm nginx mongodb
-
-# Install yarn
-npm install -g yarn
-
-# Install PM2 for process management
-npm install -g pm2
-```
-
-#### 2. Application Deployment
-```bash
-# Clone and setup
-git clone <repository-url> /var/www/global-radio
-cd /var/www/global-radio
-
-# Backend setup
-cd backend
-pip install -r requirements.txt
-
-# Frontend build
-cd ../frontend
-yarn install
-yarn build
-
-# Start services with PM2
-pm2 start ecosystem.config.js
-```
-
-#### 3. Nginx Configuration
-
-**nginx.conf**
-```nginx
-server {
-    listen 80;
-    server_name your-domain.com;
-
-    # Frontend
-    location / {
-        root /var/www/global-radio/frontend/build;
-        index index.html;
-        try_files $uri $uri/ /index.html;
-    }
-
-    # Backend API
-    location /api/ {
-        proxy_pass http://localhost:8001;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-    }
-}
-```
-
-### Environment Variables for Production
-
-**Backend (.env)**
-```env
-MONGO_URL=mongodb://localhost:27017
-DB_NAME=global_radio_prod
-```
-
-**Frontend (.env.production)**
-```env
-REACT_APP_BACKEND_URL=https://your-domain.com
-```
-
 ## 🧪 Testing
 
-### Run Tests
-```bash
-# Backend tests
-cd backend
-python -m pytest
-
-# Frontend tests  
-cd frontend
-yarn test
-```
-
 ### Manual Testing
-1. Visit the application in your browser
+1. Visit http://localhost:3000 in your browser
 2. Verify stations load automatically
-3. Test search functionality
-4. Test audio playback
-5. Verify responsive design on mobile
+3. Test real-time search functionality
+4. Test favorites feature
+5. Test audio playback
+6. Verify responsive design on mobile
+
+### Debug Commands
+```bash
+# Check backend status
+curl http://localhost:8001/api/
+
+# Test API endpoints
+curl http://localhost:8001/api/radio/stations/popular
+```
 
 ## 🔧 Troubleshooting
 
 ### Common Issues
 
 1. **CORS Errors**
-   - Ensure backend is running on correct port
+   - Ensure backend is running on port 8001
    - Check REACT_APP_BACKEND_URL configuration
 
 2. **No Stations Loading**
@@ -392,20 +233,25 @@ yarn test
    - Check MONGO_URL configuration
    - Verify database permissions
 
-### Debug Commands
-```bash
-# Check backend status
-curl http://localhost:8001/api/
+5. **Frontend Build Issues**
+   - Use `yarn` instead of `npm`
+   - Clear node_modules and reinstall: `rm -rf node_modules && yarn install`
 
-# View backend logs
-tail -f backend/logs/app.log
+## 🎵 Using the Application
 
-# Check frontend build
-cd frontend && yarn build
+### Basic Usage
+1. **Browse Stations**: View popular worldwide radio stations
+2. **Search**: Type in the search box for real-time filtering
+3. **Filter by Country**: Select a country from the dropdown
+4. **Play Audio**: Click any station card to start streaming
+5. **Add Favorites**: Click the heart icon (🤍) to save stations
+6. **View Favorites**: Click the "❤️ Favorites" tab
 
-# Test API endpoints
-curl http://localhost:8001/api/radio/stations/popular
-```
+### Features
+- **Floating Controls**: Audio controls stay visible in the header while browsing
+- **Real-Time Search**: No search button needed - results appear as you type
+- **Persistent Favorites**: Your favorites are saved between sessions
+- **Responsive Design**: Works on desktop, tablet, and mobile
 
 ## 🤝 Contributing
 
@@ -417,7 +263,7 @@ curl http://localhost:8001/api/radio/stations/popular
 
 ### Development Guidelines
 - Follow existing code style
-- Add tests for new features
+- Test changes locally before submitting
 - Update documentation as needed
 - Ensure responsive design principles
 
@@ -430,10 +276,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - [Radio Browser](https://www.radio-browser.info/) - Community-driven radio station database
 - [FastAPI](https://fastapi.tiangolo.com/) - Modern web framework for building APIs
 - [React](https://reactjs.org/) - JavaScript library for building user interfaces
-
-## 📞 Support
-
-For support, please open an issue on GitHub or contact the development team.
 
 ---
 
