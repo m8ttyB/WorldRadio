@@ -245,6 +245,12 @@ function App() {
     setLoading(false);
   };
 
+  const clearAllFavorites = () => {
+    setFavorites([]);
+    localStorage.removeItem('globalRadioFavorites');
+    console.log('All favorites cleared');
+  };
+
   const displayedStations = showFavorites ? favorites : stations;
 
   return (
