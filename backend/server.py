@@ -32,12 +32,50 @@ RADIO_API_SERVERS = [
 
 def get_sample_radio_data(endpoint: str) -> list:
     """Return sample data when all API servers fail"""
-    if "topvote" in endpoint:
-        return [{"name": "Sample Station", "url": "http://example.com/stream"}]
-    elif "search" in endpoint:
-        return [{"name": "Sample Search Result", "url": "http://example.com/stream"}]
+    if "topvote" in endpoint or "stations" in endpoint:
+        return [
+            {
+                "stationuuid": "sample-uuid-1",
+                "name": "BBC World Service",
+                "url": "http://stream.live.vc.bbcmedia.co.uk/bbc_world_service",
+                "url_resolved": "http://stream.live.vc.bbcmedia.co.uk/bbc_world_service",
+                "country": "United Kingdom",
+                "tags": "news,talk,english",
+                "votes": 12345,
+                "bitrate": 128,
+                "codec": "MP3"
+            },
+            {
+                "stationuuid": "sample-uuid-2", 
+                "name": "Radio France Inter",
+                "url": "http://icecast.radiofrance.fr/franceinter-midfi.mp3",
+                "url_resolved": "http://icecast.radiofrance.fr/franceinter-midfi.mp3",
+                "country": "France",
+                "tags": "news,talk,french",
+                "votes": 8765,
+                "bitrate": 128,
+                "codec": "MP3"
+            },
+            {
+                "stationuuid": "sample-uuid-3",
+                "name": "NPR News",
+                "url": "http://npr-ice.streamguys1.com/live.mp3",
+                "url_resolved": "http://npr-ice.streamguys1.com/live.mp3", 
+                "country": "United States",
+                "tags": "news,talk,english",
+                "votes": 15432,
+                "bitrate": 128,
+                "codec": "MP3"
+            }
+        ]
     elif "countries" in endpoint:
-        return [{"name": "Sample Country", "stationcount": 100}]
+        return [
+            {"name": "United States", "stationcount": 2500},
+            {"name": "Germany", "stationcount": 1200},
+            {"name": "United Kingdom", "stationcount": 800},
+            {"name": "France", "stationcount": 600},
+            {"name": "Canada", "stationcount": 400}
+        ]
     return []
 
 async def try_radio_api_request(endpoint: str, params: dict = None):
