@@ -216,9 +216,46 @@ audio {
   }
 }
 
-/* Sticky header on mobile */
+/* Sticky header enhancements */
 .sticky {
   position: sticky;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* Floating current playing in header */
+.floating-player {
+  background: linear-gradient(135deg, #1f2937, #374151);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+/* Extra compact controls */
+.btn-mini {
+  width: 28px;
+  height: 28px;
+  font-size: 10px;
+}
+
+.btn-mini:hover {
+  transform: scale(1.05);
+}
+
+/* Header shadow for floating effect */
+.header-shadow {
+  box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* Responsive floating player */
+@media (max-width: 768px) {
+  .floating-player {
+    max-width: 200px;
+  }
+  
+  .floating-player .truncate {
+    max-width: 100px;
+  }
 }
 
 /* Button states */
