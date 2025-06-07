@@ -45,20 +45,22 @@ function App() {
         setFavorites([]);
         // Clear corrupted data
         localStorage.removeItem('globalRadioFavorites');
+      } finally {
+        setFavoritesLoaded(true);
       }
     };
 
     loadFavorites();
   }, []);
 
-  // Save favorites to localStorage whenever favorites change
+  // Save favorites to localStorage whenever favorites change (but only after initial load)
   useEffect(() => {
-    if (favorites.length > 0 || localStorage.getItem('globalRadioFavorites')) {
-      console.log('Saving favorites to localStorage:', favorites);
+    if (favoritesLoaded) {
+      console.log('Saving favorites to localStorage:', favorites.length, 'stations');
       localStorage.setItem('globalRadioFavorites', JSON.stringify(favorites));
       console.log('Favorites saved successfully');
     }
-  }, [favorites]);
+  }, [favorites, favoritesLoaded]);
 
   // Fetch initial data
   useEffect(() => {
