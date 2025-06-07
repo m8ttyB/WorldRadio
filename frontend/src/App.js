@@ -203,13 +203,78 @@ function App() {
     setSelectedCountry('');
     setSearchTerm('');
     setShowFavorites(false);
+    clearTimeout(searchTimeout);
     fetchPopularStations();
   };
 
-  const handleSearch = (e) => {
-    e.preventDefault();
-    setShowFavorites(false);
-    searchStations();
+  const performSearch = async (searchValue = searchTerm, countryValue = selectedCountry) => {
+    // Don't search if we're showing favorites
+    if (showFavorites) return;
+    
+    // If both search and country are empty, show popular stations
+    if (!searchValue.trim() && !countryValue) {
+      fetchPopularStations();
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setError('');
+      
+      let url = `${API}/radio/stations/search?limit=100`;
+      
+      if (searchValue.trim()) {
+        url += `&name=${encodeURIComponent(searchValue.trim())}`;
+      }
+      if (countryValue) {
+        url += `&country=${encodeURIComponent(countryValue)}`;
+      }
+
+      const response = await fetch(url);
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      
+      if (Array.isArray(data)) {
+        setStations(data);
+      } else {
+        throw new Error('Invalid response format');
+      }
+    } catch (err) {
+      console.error('Error searching stations:', err);
+      setError('Search failed. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSearchChange = (value) => {
+    setSearchTerm(value);
+    
+    // Clear existing timeout
+    if (searchTimeout) {
+      clearTimeout(searchTimeout);
+    }
+    
+    // Set new timeout for debounced search
+    const newTimeout = setTimeout(() => {
+      performSearch(value, selectedCountry);
+    }, 300); // 300ms delay
+    
+    setSearchTimeout(newTimeout);
+  };
+
+  const handleCountryChange = (value) => {
+    setSelectedCountry(value);
+    // Clear any pending search timeout since country change should be immediate
+    if (searchTimeout) {
+      clearTimeout(searchTimeout);
+    }
+    // Perform immediate search with new country
+    performSearch(searchTerm, value);
   };
 
   const toggleFavorite = (station) => {
