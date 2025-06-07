@@ -1,44 +1,28 @@
 #!/bin/bash
 
-# Global Radio Deployment Script
-# This script deploys the application to production
+# Global Radio - Local Development Helper
+# Quick start script for local development
 
 set -e
 
-echo "🚀 Deploying Global Radio to production..."
+echo "🚀 Starting Global Radio locally..."
 
-# Build and deploy with Docker Compose
-echo "🐳 Building Docker containers..."
-docker-compose build
-
-echo "🔄 Starting services..."
-docker-compose up -d
-
-echo "⏳ Waiting for services to start..."
-sleep 10
-
-# Health check
-echo "🔍 Performing health check..."
-if curl -f http://localhost:8001/api/ > /dev/null 2>&1; then
-    echo "✅ Backend is healthy"
-else
-    echo "❌ Backend health check failed"
-    exit 1
+# Check if MongoDB is running
+if ! pgrep -x "mongod" > /dev/null && ! docker ps | grep -q mongodb; then
+    echo "📦 Starting MongoDB with Docker..."
+    docker run -d -p 27017:27017 --name mongodb mongo:latest
+    echo "⏳ Waiting for MongoDB to start..."
+    sleep 3
 fi
 
-if curl -f http://localhost:3000/ > /dev/null 2>&1; then
-    echo "✅ Frontend is healthy"
-else
-    echo "❌ Frontend health check failed"
-    exit 1
-fi
+echo "✅ MongoDB is running"
 
-echo "🎉 Deployment successful!"
+echo "📋 To start the application:"
 echo ""
-echo "🌐 Application is running at:"
-echo "  Frontend: http://localhost:3000"
-echo "  Backend API: http://localhost:8001"
-echo "  API Docs: http://localhost:8001/docs"
+echo "Terminal 1 - Backend:"
+echo "cd backend && source .venv/bin/activate && uvicorn server:app --host 0.0.0.0 --port 8001 --reload"
 echo ""
-echo "📊 To view logs: docker-compose logs -f"
-echo "🛑 To stop: docker-compose down"
+echo "Terminal 2 - Frontend:"
+echo "cd frontend && yarn start"
+echo ""
+echo "Then visit: http://localhost:3000"
