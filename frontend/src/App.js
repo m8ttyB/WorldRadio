@@ -411,33 +411,53 @@ function App() {
         {/* Stations Grid */}
         {!loading && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {stations.map((station) => (
+            {displayedStations.map((station) => (
               <div
                 key={station.stationuuid}
-                className={`border rounded-lg p-4 hover:shadow-md transition-all cursor-pointer ${
+                className={`border rounded-lg p-4 hover:shadow-md transition-all cursor-pointer relative ${
                   currentStation && currentStation.stationuuid === station.stationuuid
                     ? 'border-black bg-gray-50'
                     : 'border-gray-200 hover:border-gray-300'
                 }`}
-                onClick={() => playStation(station)}
               >
-                <div className="flex items-start justify-between mb-3">
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-medium text-gray-900 truncate">{station.name}</h3>
-                    <p className="text-gray-600 text-sm">{station.country}</p>
+                {/* Favorite Button */}
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleFavorite(station);
+                  }}
+                  className={`absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center transition-all ${
+                    isFavorite(station)
+                      ? 'bg-pink-100 text-pink-600 hover:bg-pink-200'
+                      : 'bg-gray-100 text-gray-400 hover:bg-gray-200 hover:text-pink-500'
+                  }`}
+                  title={isFavorite(station) ? 'Remove from favorites' : 'Add to favorites'}
+                >
+                  {isFavorite(station) ? '❤️' : '🤍'}
+                </button>
+
+                <div 
+                  onClick={() => playStation(station)}
+                  className="pr-10"
+                >
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-medium text-gray-900 truncate">{station.name}</h3>
+                      <p className="text-gray-600 text-sm">{station.country}</p>
+                    </div>
+                    <button className="ml-3 text-xl text-gray-400 hover:text-black transition-colors">
+                      {currentStation && currentStation.stationuuid === station.stationuuid && isPlaying ? '⏸' : '▶'}
+                    </button>
                   </div>
-                  <button className="ml-3 text-xl text-gray-400 hover:text-black transition-colors">
-                    {currentStation && currentStation.stationuuid === station.stationuuid && isPlaying ? '⏸' : '▶'}
-                  </button>
-                </div>
-                
-                {station.tags && (
-                  <p className="text-gray-500 text-xs mb-2 truncate">{station.tags}</p>
-                )}
-                
-                <div className="flex justify-between items-center text-xs text-gray-400">
-                  <span>{station.votes || 0} votes</span>
-                  {station.bitrate && <span>{station.bitrate} kbps</span>}
+                  
+                  {station.tags && (
+                    <p className="text-gray-500 text-xs mb-2 truncate">{station.tags}</p>
+                  )}
+                  
+                  <div className="flex justify-between items-center text-xs text-gray-400">
+                    <span>{station.votes || 0} votes</span>
+                    {station.bitrate && <span>{station.bitrate} kbps</span>}
+                  </div>
                 </div>
               </div>
             ))}
@@ -445,10 +465,17 @@ function App() {
         )}
 
         {/* Empty State */}
-        {!loading && stations.length === 0 && (
+        {!loading && displayedStations.length === 0 && (
           <div className="text-center py-12">
-            <p className="text-gray-900 text-xl font-light">No stations found</p>
-            <p className="text-gray-500 mt-2">Try adjusting your search criteria</p>
+            <p className="text-gray-900 text-xl font-light">
+              {showFavorites ? 'No favorite stations yet' : 'No stations found'}
+            </p>
+            <p className="text-gray-500 mt-2">
+              {showFavorites 
+                ? 'Add stations to your favorites by clicking the ❤️ icon on any station card'
+                : 'Try adjusting your search criteria'
+              }
+            </p>
           </div>
         )}
       </div>
