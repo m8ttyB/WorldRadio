@@ -54,9 +54,6 @@ async def get_status_checks():
     status_checks = await db.status_checks.find().to_list(1000)
     return [StatusCheck(**status_check) for status_check in status_checks]
 
-# Include the router in the main app
-app.include_router(api_router)
-
 # Radio Browser API proxy endpoints
 RADIO_API_BASE = "https://de1.api.radio-browser.info"
 
@@ -135,6 +132,9 @@ async def register_station_click(station_uuid: str):
     except Exception as e:
         logger.warning(f"Error registering click for {station_uuid}: {e}")
         return {"success": False}
+
+# Include the router in the main app
+app.include_router(api_router)
 
 app.add_middleware(
     CORSMiddleware,
