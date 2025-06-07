@@ -298,6 +298,45 @@ function App() {
 
       {/* Search Controls */}
       <div className="max-w-6xl mx-auto px-4 py-6">
+        {/* Current Playing - Compact */}
+        {currentStation && (
+          <div className="bg-black text-white rounded-lg p-4 mb-4 shadow-md">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3 flex-1 min-w-0">
+                <div className="w-8 h-8 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+                  <span className="text-sm">📻</span>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-sm font-medium truncate">{currentStation.name}</h3>
+                  <p className="text-gray-300 text-xs">{currentStation.country}</p>
+                </div>
+                {isPlaying && (
+                  <div className="hidden sm:flex items-center text-xs text-gray-300">
+                    <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse mr-2"></div>
+                    LIVE
+                  </div>
+                )}
+              </div>
+              <div className="flex space-x-2 ml-4">
+                <button
+                  onClick={() => playStation(currentStation)}
+                  className="w-8 h-8 bg-white text-black rounded-full flex items-center justify-center hover:bg-gray-200 transition-colors text-sm"
+                  title={isPlaying ? 'Pause' : 'Play'}
+                >
+                  {isPlaying ? '⏸' : '▶'}
+                </button>
+                <button
+                  onClick={stopPlayback}
+                  className="w-8 h-8 bg-gray-700 text-white rounded-full flex items-center justify-center hover:bg-gray-600 transition-colors text-sm"
+                  title="Stop"
+                >
+                  ⏹
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Favorites and Search Toggle */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex space-x-4">
