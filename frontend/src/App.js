@@ -257,8 +257,8 @@ function App() {
       />
       
       {/* Header */}
-      <header className="border-b border-gray-200 bg-white sticky top-0 z-10">
-        <div className="max-w-6xl mx-auto px-4 py-6">
+      <header className="border-b border-gray-200 bg-white sticky top-0 z-10 shadow-sm">
+        <div className="max-w-6xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <div className="w-8 h-8 bg-black rounded-full flex items-center justify-center">
@@ -269,6 +269,43 @@ function App() {
                 <p className="text-gray-500 text-sm">Worldwide stations</p>
               </div>
             </div>
+            
+            {/* Floating Current Playing - Compact */}
+            {currentStation && (
+              <div className="flex items-center space-x-3 bg-black text-white rounded-lg px-4 py-2 shadow-md max-w-md">
+                <div className="flex items-center space-x-2 flex-1 min-w-0">
+                  <div className="w-6 h-6 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+                    <span className="text-xs">📻</span>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-sm font-medium truncate">{currentStation.name}</h3>
+                    <p className="text-gray-300 text-xs truncate">{currentStation.country}</p>
+                  </div>
+                  {isPlaying && (
+                    <div className="flex items-center text-xs text-gray-300 ml-2">
+                      <div className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse mr-1"></div>
+                      <span className="hidden sm:inline">LIVE</span>
+                    </div>
+                  )}
+                </div>
+                <div className="flex space-x-1 ml-2">
+                  <button
+                    onClick={() => playStation(currentStation)}
+                    className="w-7 h-7 bg-white text-black rounded-full flex items-center justify-center hover:bg-gray-200 transition-colors text-xs"
+                    title={isPlaying ? 'Pause' : 'Play'}
+                  >
+                    {isPlaying ? '⏸' : '▶'}
+                  </button>
+                  <button
+                    onClick={stopPlayback}
+                    className="w-7 h-7 bg-gray-700 text-white rounded-full flex items-center justify-center hover:bg-gray-600 transition-colors text-xs"
+                    title="Stop"
+                  >
+                    ⏹
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </header>
