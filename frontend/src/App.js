@@ -13,7 +13,27 @@ function App() {
   const [selectedCountry, setSelectedCountry] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [error, setError] = useState('');
+  const [favorites, setFavorites] = useState([]);
+  const [showFavorites, setShowFavorites] = useState(false);
   const audioRef = useRef(null);
+
+  // Load favorites from localStorage on component mount
+  useEffect(() => {
+    const savedFavorites = localStorage.getItem('globalRadioFavorites');
+    if (savedFavorites) {
+      try {
+        setFavorites(JSON.parse(savedFavorites));
+      } catch (error) {
+        console.error('Error loading favorites:', error);
+        setFavorites([]);
+      }
+    }
+  }, []);
+
+  // Save favorites to localStorage whenever favorites change
+  useEffect(() => {
+    localStorage.setItem('globalRadioFavorites', JSON.stringify(favorites));
+  }, [favorites]);
 
   // Fetch initial data
   useEffect(() => {
