@@ -291,12 +291,6 @@ function App() {
           </div>
         )}
 
-        {/* Debug Info */}
-        <div className="bg-yellow-50 border border-yellow-200 p-4 mb-4 rounded-lg">
-          <p className="text-sm">Debug: Loading={loading.toString()}, Stations={stations.length}, Error={error || 'none'}</p>
-          <p className="text-sm">API URL: {API}</p>
-        </div>
-
         {/* Loading State */}
         {loading && (
           <div className="text-center py-12">
