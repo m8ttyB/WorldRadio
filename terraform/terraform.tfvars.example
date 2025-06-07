@@ -1,0 +1,49 @@
+# Global Radio - Terraform Variables Example
+# Copy this file to terraform.tfvars and update with your values
+
+# Digital Ocean Configuration
+do_token     = "dop_v1_your_digital_ocean_token_here"
+ssh_key_name = "your-ssh-key-name"
+
+# Project Configuration
+project_name = "global-radio"
+environment  = "production"
+region       = "nyc1"
+
+# GitHub Configuration
+github_repo   = "yourusername/global-radio"
+github_branch = "main"
+
+# Database Configuration
+database_name       = "global_radio"
+database_user       = "app_user"
+database_size       = "db-s-1vcpu-1gb"
+database_node_count = 1
+
+# Backend Configuration
+backend_instance_count = 1
+backend_instance_size  = "basic-xxs"
+
+# Domain Configuration (optional)
+custom_domain  = "radio.yourdomain.com"
+backend_domain = "api.radio.yourdomain.com"
+
+# Monitoring Configuration
+alert_email = "admin@yourdomain.com"
+
+# Security Configuration
+trusted_ips = [
+  "203.0.113.0/24",  # Your office IP range
+  "198.51.100.1/32"  # Your home IP
+]
+
+# Backup Configuration
+enable_backups = true
+
+# Additional tags
+tags = {
+  Owner       = "DevOps Team"
+  Environment = "Production"
+  Project     = "Global Radio"
+  CostCenter  = "Engineering"
+}
