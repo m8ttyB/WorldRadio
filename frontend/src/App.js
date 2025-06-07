@@ -269,29 +269,6 @@ function App() {
                 <p className="text-gray-500 text-sm">Worldwide stations</p>
               </div>
             </div>
-            
-            {currentStation && (
-              <div className="hidden md:flex items-center space-x-4">
-                <div className="text-right">
-                  <p className="font-medium text-gray-900">{currentStation.name}</p>
-                  <p className="text-sm text-gray-500">{currentStation.country}</p>
-                </div>
-                <div className="flex space-x-2">
-                  <button
-                    onClick={() => playStation(currentStation)}
-                    className="w-10 h-10 bg-black text-white rounded-full flex items-center justify-center hover:bg-gray-800 transition-colors"
-                  >
-                    {isPlaying ? '⏸' : '▶'}
-                  </button>
-                  <button
-                    onClick={stopPlayback}
-                    className="w-10 h-10 bg-gray-200 text-gray-700 rounded-full flex items-center justify-center hover:bg-gray-300 transition-colors"
-                  >
-                    ⏹
-                  </button>
-                </div>
-              </div>
-            )}
           </div>
         </div>
       </header>
