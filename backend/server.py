@@ -60,6 +60,10 @@ app.include_router(api_router)
 # Radio Browser API proxy endpoints
 RADIO_API_BASE = "https://de1.api.radio-browser.info"
 
+@api_router.get("/test")
+async def test_route():
+    return {"status": "test successful"}
+
 @api_router.get("/radio/stations/popular")
 async def get_popular_stations(limit: int = 100):
     """Get popular radio stations"""
