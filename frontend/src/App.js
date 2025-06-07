@@ -215,26 +215,15 @@ function App() {
     setFavorites(prevFavorites => {
       const isAlreadyFavorite = prevFavorites.some(fav => fav.stationuuid === station.stationuuid);
       
-      let newFavorites;
       if (isAlreadyFavorite) {
         // Remove from favorites
-        newFavorites = prevFavorites.filter(fav => fav.stationuuid !== station.stationuuid);
         console.log('Removed from favorites:', station.name);
+        return prevFavorites.filter(fav => fav.stationuuid !== station.stationuuid);
       } else {
         // Add to favorites
-        newFavorites = [...prevFavorites, station];
         console.log('Added to favorites:', station.name);
+        return [...prevFavorites, station];
       }
-      
-      // Immediately save to localStorage
-      try {
-        localStorage.setItem('globalRadioFavorites', JSON.stringify(newFavorites));
-        console.log('Favorites immediately saved to localStorage:', newFavorites.length, 'stations');
-      } catch (error) {
-        console.error('Error saving favorites to localStorage:', error);
-      }
-      
-      return newFavorites;
     });
   };
 
