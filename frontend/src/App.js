@@ -26,16 +26,22 @@ function App() {
       setLoading(true);
       setError('');
       
+      console.log('Fetching stations from:', `${API}/radio/stations/popular?limit=100`);
       const response = await fetch(`${API}/radio/stations/popular?limit=100`);
       
+      console.log('Response status:', response.status);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
       const data = await response.json();
+      console.log('Received data:', data);
+      console.log('Data length:', data.length);
       
       if (Array.isArray(data)) {
+        console.log('Setting stations:', data.length);
         setStations(data);
+        console.log('Stations set successfully');
       } else {
         throw new Error('Invalid response format');
       }
@@ -43,6 +49,7 @@ function App() {
       console.error('Error fetching stations:', err);
       setError('Unable to load radio stations. Please try again.');
     } finally {
+      console.log('Setting loading to false');
       setLoading(false);
     }
   };
