@@ -410,7 +410,7 @@ function App() {
         </div>
 
         {!showFavorites && (
-          <form onSubmit={(e) => { e.preventDefault(); performSearch(); }} className="bg-gray-50 rounded-lg p-6 mb-6">
+          <div className="bg-gray-50 rounded-lg p-6 mb-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
               <input
                 type="text"
@@ -433,19 +433,13 @@ function App() {
                 ))}
               </select>
 
-              <div className="flex space-x-2">
-                <button
-                  type="submit"
-                  className="flex-1 bg-black text-white px-4 py-3 rounded-lg hover:bg-gray-800 transition-colors font-medium"
-                >
-                  Search
-                </button>
+              <div className="flex justify-end">
                 <button
                   type="button"
                   onClick={resetToPopular}
-                  className="px-4 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                  className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium"
                 >
-                  Reset
+                  Clear Filters
                 </button>
               </div>
             </div>
@@ -455,7 +449,20 @@ function App() {
                 {error}
               </div>
             )}
-          </form>
+
+            {/* Real-time search indicator */}
+            {(searchTerm || selectedCountry) && !loading && (
+              <div className="text-sm text-gray-600 mt-2">
+                {searchTerm && selectedCountry 
+                  ? `Filtering by "${searchTerm}" in ${selectedCountry}`
+                  : searchTerm 
+                    ? `Searching for "${searchTerm}"`
+                    : `Showing stations from ${selectedCountry}`
+                }
+                {stations.length > 0 && ` • ${stations.length} station${stations.length !== 1 ? 's' : ''} found`}
+              </div>
+            )}
+          </div>
         )}
 
         {showFavorites && (
