@@ -402,7 +402,7 @@ function App() {
                 <button
                   onClick={() => {
                     if (window.confirm('Are you sure you want to clear all favorites?')) {
-                      setFavorites([]);
+                      clearAllFavorites();
                     }
                   }}
                   className="text-pink-600 hover:text-pink-800 text-sm font-medium"
