@@ -115,41 +115,6 @@ function App() {
     }
   };
 
-  const searchStations = async () => {
-    try {
-      setLoading(true);
-      setError('');
-      
-      let url = `${API}/radio/stations/search?limit=100`;
-      
-      if (searchTerm.trim()) {
-        url += `&name=${encodeURIComponent(searchTerm.trim())}`;
-      }
-      if (selectedCountry) {
-        url += `&country=${encodeURIComponent(selectedCountry)}`;
-      }
-
-      const response = await fetch(url);
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      
-      if (Array.isArray(data)) {
-        setStations(data);
-      } else {
-        throw new Error('Invalid response format');
-      }
-    } catch (err) {
-      console.error('Error searching stations:', err);
-      setError('Search failed. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const playStation = async (station) => {
     try {
       if (currentStation && currentStation.stationuuid === station.stationuuid && isPlaying) {
