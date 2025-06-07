@@ -445,35 +445,6 @@ function App() {
           </div>
         )}
 
-        {/* Current Playing */}
-        {currentStation && (
-          <div className="bg-black text-white rounded-lg p-6 mb-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-xl font-medium mb-1">{currentStation.name}</h3>
-                <p className="text-gray-300">{currentStation.country}</p>
-                {currentStation.tags && (
-                  <p className="text-gray-400 text-sm mt-1">{currentStation.tags}</p>
-                )}
-              </div>
-              <div className="flex space-x-2">
-                <button
-                  onClick={() => playStation(currentStation)}
-                  className="w-12 h-12 bg-white text-black rounded-full flex items-center justify-center hover:bg-gray-200 transition-colors"
-                >
-                  {isPlaying ? '⏸' : '▶'}
-                </button>
-                <button
-                  onClick={stopPlayback}
-                  className="w-12 h-12 bg-gray-800 text-white rounded-full flex items-center justify-center hover:bg-gray-700 transition-colors"
-                >
-                  ⏹
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
         {/* Loading State */}
         {loading && (
           <div className="text-center py-12">
