@@ -398,6 +398,26 @@ async def search_stations(
             "/json/stations/search",
             params=params
         )
+        
+        # If we got sample data, perform local filtering
+        if result and len(result) > 0 and result[0].get("stationuuid", "").startswith("sample-uuid"):
+            filtered_result = []
+            for station in result:
+                match = True
+                
+                # Filter by name (case-insensitive)
+                if name and name.lower() not in station.get("name", "").lower():
+                    match = False
+                
+                # Filter by country (case-insensitive)
+                if country and country.lower() != station.get("country", "").lower():
+                    match = False
+                
+                if match:
+                    filtered_result.append(station)
+            
+            return filtered_result[:limit]
+        
         return result
     except Exception as e:
         logger.error(f"Error searching stations: {e}")
