@@ -263,52 +263,113 @@ function App() {
 
       {/* Search Controls */}
       <div className="max-w-6xl mx-auto px-4 py-6">
-        <form onSubmit={handleSearch} className="bg-gray-50 rounded-lg p-6 mb-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-            <input
-              type="text"
-              placeholder="Search stations..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-            />
-            
-            <select
-              value={selectedCountry}
-              onChange={(e) => setSelectedCountry(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+        {/* Favorites and Search Toggle */}
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex space-x-4">
+            <button
+              onClick={() => {
+                setShowFavorites(false);
+                if (stations.length === 0 || showFavorites) {
+                  fetchPopularStations();
+                }
+              }}
+              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                !showFavorites 
+                  ? 'bg-black text-white' 
+                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+              }`}
             >
-              <option value="">All Countries</option>
-              {countries.map((country) => (
-                <option key={country.name} value={country.name}>
-                  {country.name} ({country.stationcount})
-                </option>
-              ))}
-            </select>
+              All Stations
+            </button>
+            <button
+              onClick={showFavoriteStations}
+              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                showFavorites 
+                  ? 'bg-black text-white' 
+                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+              }`}
+            >
+              ❤️ Favorites ({favorites.length})
+            </button>
+          </div>
+        </div>
 
-            <div className="flex space-x-2">
-              <button
-                type="submit"
-                className="flex-1 bg-black text-white px-4 py-3 rounded-lg hover:bg-gray-800 transition-colors font-medium"
+        {!showFavorites && (
+          <form onSubmit={handleSearch} className="bg-gray-50 rounded-lg p-6 mb-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+              <input
+                type="text"
+                placeholder="Search stations..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+              />
+              
+              <select
+                value={selectedCountry}
+                onChange={(e) => setSelectedCountry(e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
               >
-                Search
-              </button>
-              <button
-                type="button"
-                onClick={resetToPopular}
-                className="px-4 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-              >
-                Reset
-              </button>
+                <option value="">All Countries</option>
+                {countries.map((country) => (
+                  <option key={country.name} value={country.name}>
+                    {country.name} ({country.stationcount})
+                  </option>
+                ))}
+              </select>
+
+              <div className="flex space-x-2">
+                <button
+                  type="submit"
+                  className="flex-1 bg-black text-white px-4 py-3 rounded-lg hover:bg-gray-800 transition-colors font-medium"
+                >
+                  Search
+                </button>
+                <button
+                  type="button"
+                  onClick={resetToPopular}
+                  className="px-4 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                >
+                  Reset
+                </button>
+              </div>
+            </div>
+
+            {error && (
+              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+                {error}
+              </div>
+            )}
+          </form>
+        )}
+
+        {showFavorites && (
+          <div className="bg-pink-50 border border-pink-200 rounded-lg p-6 mb-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-medium text-pink-900">Your Favorite Stations</h3>
+                <p className="text-pink-700 text-sm mt-1">
+                  {favorites.length === 0 
+                    ? "You haven't added any favorite stations yet. Click the ❤️ icon on any station to add it to your favorites!"
+                    : `You have ${favorites.length} favorite station${favorites.length !== 1 ? 's' : ''}`
+                  }
+                </p>
+              </div>
+              {favorites.length > 0 && (
+                <button
+                  onClick={() => {
+                    if (window.confirm('Are you sure you want to clear all favorites?')) {
+                      setFavorites([]);
+                    }
+                  }}
+                  className="text-pink-600 hover:text-pink-800 text-sm font-medium"
+                >
+                  Clear All
+                </button>
+              )}
             </div>
           </div>
-
-          {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
-              {error}
-            </div>
-          )}
-        </form>
+        )}
 
         {/* Current Playing */}
         {currentStation && (
