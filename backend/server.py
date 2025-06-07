@@ -193,7 +193,21 @@ async def get_countries():
 async def register_station_click(station_uuid: str):
     """Register a click for a radio station"""
     try:
-        result = await try_radio_api_request(f"/json/url/{station_uuid}")
+        # Try to register with actual API servers
+        for server in RADIO_API_SERVERS:
+            try:
+                async with httpx.AsyncClient(timeout=10.0) as client:
+                    response = await client.post(
+                        f"{server}/json/url/{station_uuid}",
+                        headers={"User-Agent": "GlobalRadioApp/1.0"}
+                    )
+                    if response.status_code in [200, 201, 204]:
+                        return {"success": True}
+            except Exception as e:
+                logger.warning(f"Failed to register click with {server}: {e}")
+                continue
+        
+        # If all servers fail, just return success (click registration is not critical)
         return {"success": True}
     except Exception as e:
         logger.warning(f"Error registering click for {station_uuid}: {e}")
