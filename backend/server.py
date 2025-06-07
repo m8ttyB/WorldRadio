@@ -98,9 +98,6 @@ async def get_status_checks():
     status_checks = await db.status_checks.find().to_list(1000)
     return [StatusCheck(**status_check) for status_check in status_checks]
 
-# Radio Browser API proxy endpoints
-RADIO_API_BASE = "https://de1.api.radio-browser.info"
-
 @api_router.get("/test")
 async def test_route():
     return {"status": "test successful"}
