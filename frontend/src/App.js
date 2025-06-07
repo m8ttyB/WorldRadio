@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './App.css';
 
-// Radio Browser API with CORS proxy
-const CORS_PROXY = 'https://corsproxy.io/';
-const RADIO_API_BASE = 'https://de1.api.radio-browser.info';
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const API = `${BACKEND_URL}/api`;
 
 function App() {
   const [stations, setStations] = useState([]);
@@ -27,19 +26,8 @@ function App() {
       setLoading(true);
       setError('');
       
-      // Try direct API first, fallback to CORS proxy
-      let response;
-      try {
-        response = await fetch(`${RADIO_API_BASE}/json/stations/topvote?limit=100&hidebroken=true`, {
-          headers: {
-            'User-Agent': 'GlobalRadioApp/1.0'
-          }
-        });
-      } catch (corsError) {
-        console.log('Direct API failed, using CORS proxy...');
-        response = await fetch(`${CORS_PROXY}${encodeURIComponent(`${RADIO_API_BASE}/json/stations/topvote?limit=100&hidebroken=true`)}`);
-      }
-
+      const response = await fetch(`${API}/radio/stations/popular?limit=100`);
+      
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -61,16 +49,7 @@ function App() {
 
   const fetchCountries = async () => {
     try {
-      let response;
-      try {
-        response = await fetch(`${RADIO_API_BASE}/json/countries?hidebroken=true`, {
-          headers: {
-            'User-Agent': 'GlobalRadioApp/1.0'
-          }
-        });
-      } catch (corsError) {
-        response = await fetch(`${CORS_PROXY}${encodeURIComponent(`${RADIO_API_BASE}/json/countries?hidebroken=true`)}`);
-      }
+      const response = await fetch(`${API}/radio/countries`);
 
       if (response.ok) {
         const data = await response.json();
@@ -93,7 +72,7 @@ function App() {
       setLoading(true);
       setError('');
       
-      let url = `${RADIO_API_BASE}/json/stations/search?limit=100&hidebroken=true`;
+      let url = `${API}/radio/stations/search?limit=100`;
       
       if (searchTerm.trim()) {
         url += `&name=${encodeURIComponent(searchTerm.trim())}`;
@@ -102,16 +81,7 @@ function App() {
         url += `&country=${encodeURIComponent(selectedCountry)}`;
       }
 
-      let response;
-      try {
-        response = await fetch(url, {
-          headers: {
-            'User-Agent': 'GlobalRadioApp/1.0'
-          }
-        });
-      } catch (corsError) {
-        response = await fetch(`${CORS_PROXY}${encodeURIComponent(url)}`);
-      }
+      const response = await fetch(url);
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -140,13 +110,10 @@ function App() {
         return;
       }
 
-      // Register click with Radio Browser API
+      // Register click with our backend
       try {
-        await fetch(`${RADIO_API_BASE}/json/url/${station.stationuuid}`, {
-          method: 'POST',
-          headers: {
-            'User-Agent': 'GlobalRadioApp/1.0'
-          }
+        await fetch(`${API}/radio/stations/${station.stationuuid}/click`, {
+          method: 'POST'
         });
       } catch (e) {
         // Ignore click registration errors
