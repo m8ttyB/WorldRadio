@@ -16,6 +16,7 @@ function App() {
   const [favorites, setFavorites] = useState([]);
   const [favoritesLoaded, setFavoritesLoaded] = useState(false);
   const [showFavorites, setShowFavorites] = useState(false);
+  const [searchTimeout, setSearchTimeout] = useState(null);
   const audioRef = useRef(null);
 
   // Load favorites from localStorage on component mount
