@@ -278,9 +278,11 @@ def get_sample_radio_data(endpoint: str) -> list:
 
 async def try_radio_api_request(endpoint: str, params: dict = None):
     """Try multiple Radio Browser API servers with improved error handling"""
+    
+    # First, try Radio Browser API servers
     for server in RADIO_API_SERVERS:
         try:
-            async with httpx.AsyncClient(timeout=10.0) as client:
+            async with httpx.AsyncClient(timeout=8.0) as client:
                 response = await client.get(
                     f"{server}{endpoint}",
                     params=params,
@@ -294,6 +296,29 @@ async def try_radio_api_request(endpoint: str, params: dict = None):
                         return data
         except Exception as e:
             logger.warning(f"Failed to connect to {server}: {e}")
+            continue
+    
+    # Try alternative approach with different API endpoints
+    alternative_servers = [
+        "https://www.radio-browser.info/webservice/json",
+        "https://api.radio-browser.info/json"
+    ]
+    
+    for server in alternative_servers:
+        try:
+            async with httpx.AsyncClient(timeout=8.0) as client:
+                response = await client.get(
+                    f"{server}{endpoint}",
+                    params=params,
+                    headers={"User-Agent": "GlobalRadioApp/1.0"}
+                )
+                if response.status_code == 200:
+                    data = response.json()
+                    if isinstance(data, list) and len(data) > 0:
+                        logger.info(f"Successfully fetched {len(data)} items from alternative server {server}")
+                        return data
+        except Exception as e:
+            logger.warning(f"Failed to connect to alternative server {server}: {e}")
             continue
     
     # If all servers fail, return comprehensive sample data
