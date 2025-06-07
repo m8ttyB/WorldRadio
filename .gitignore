@@ -1,70 +1,74 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-.idea/
-dist
-# dependencies
+# Dependencies
 node_modules/
-/.pnp
-.pnp.js
-.yarn/install-state.gz
-.vscode
-# testing
-/coverage
-dump.rdb
-chainlit.md
-.chainlit
-# next.js
-/.next/
-/out/
-.ipynb_checkpoints/
-# production
-/build
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+pip-log.txt
+pip-delete-this-directory.txt
 
-# misc
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
 .DS_Store
-*.pem
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
 
-# debug
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Logs
+logs/
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# local env files
-# .env*.local
-*token.json*
-# vercel
-.vercel
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
 
-# typescript
-*.tsbuildinfo
-next-env.d.ts
-*pyc*
-#*.env
-.ac
-agenthub/agents/youtube/db
-*credentials.json*
+# Coverage directory used by tools like istanbul
+coverage/
+.nyc_output/
 
-venv/
-.venv/
-__pycache__/
+# Build directories
+build/
+dist/
 
-# ===================
-# ADDITIONAL RULES TO PREVENT FILE SIZE VIOLATIONS
-# ===================
-# Archive files (anywhere in the project)
-**/*.zip
-**/*.tar.gz
-**/*.tar
-**/*.tgz
+# Database
+*.db
+*.sqlite
 
-# Build caches and artifacts
-.cache/
-*.pack
+# Docker
+.dockerignore
 
-# System packages
-*.deb
+# Frontend specific
+frontend/build/
+frontend/.eslintcache
 
-# Python native libraries
-*.dylib
+# Backend specific
+backend/.pytest_cache/
+backend/test_server.log
 
-# Android SDK
-android-sdk/
+# PM2
+.pm2/
