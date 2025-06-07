@@ -19,20 +19,44 @@ function App() {
 
   // Load favorites from localStorage on component mount
   useEffect(() => {
-    const savedFavorites = localStorage.getItem('globalRadioFavorites');
-    if (savedFavorites) {
+    const loadFavorites = () => {
       try {
-        setFavorites(JSON.parse(savedFavorites));
+        const savedFavorites = localStorage.getItem('globalRadioFavorites');
+        console.log('Loading favorites from localStorage:', savedFavorites);
+        
+        if (savedFavorites && savedFavorites !== 'undefined' && savedFavorites !== 'null') {
+          const parsedFavorites = JSON.parse(savedFavorites);
+          console.log('Parsed favorites:', parsedFavorites);
+          
+          if (Array.isArray(parsedFavorites)) {
+            setFavorites(parsedFavorites);
+            console.log('Favorites loaded successfully:', parsedFavorites.length, 'stations');
+          } else {
+            console.warn('Invalid favorites format, resetting to empty array');
+            setFavorites([]);
+          }
+        } else {
+          console.log('No saved favorites found, starting with empty array');
+          setFavorites([]);
+        }
       } catch (error) {
-        console.error('Error loading favorites:', error);
+        console.error('Error loading favorites from localStorage:', error);
         setFavorites([]);
+        // Clear corrupted data
+        localStorage.removeItem('globalRadioFavorites');
       }
-    }
+    };
+
+    loadFavorites();
   }, []);
 
   // Save favorites to localStorage whenever favorites change
   useEffect(() => {
-    localStorage.setItem('globalRadioFavorites', JSON.stringify(favorites));
+    if (favorites.length > 0 || localStorage.getItem('globalRadioFavorites')) {
+      console.log('Saving favorites to localStorage:', favorites);
+      localStorage.setItem('globalRadioFavorites', JSON.stringify(favorites));
+      console.log('Favorites saved successfully');
+    }
   }, [favorites]);
 
   // Fetch initial data
