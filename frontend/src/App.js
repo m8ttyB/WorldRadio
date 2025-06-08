@@ -468,20 +468,30 @@ function App() {
         </div>
 
         {!showFavorites && (
-          <div className="bg-gray-50 rounded-lg p-6 mb-6">
+          <div className={`rounded-lg p-6 mb-6 transition-colors duration-300 ${
+            darkMode ? 'bg-gray-800' : 'bg-gray-50'
+          }`}>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
               <input
                 type="text"
                 placeholder="Search stations..."
                 value={searchTerm}
                 onChange={(e) => handleSearchChange(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent transition-colors duration-300 ${
+                  darkMode 
+                    ? 'border-gray-600 bg-gray-700 text-white placeholder-gray-400' 
+                    : 'border-gray-300 bg-white text-black placeholder-gray-500'
+                }`}
               />
               
               <select
                 value={selectedCountry}
                 onChange={(e) => handleCountryChange(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent transition-colors duration-300 ${
+                  darkMode 
+                    ? 'border-gray-600 bg-gray-700 text-white' 
+                    : 'border-gray-300 bg-white text-black'
+                }`}
               >
                 <option value="">All Countries</option>
                 {countries.map((country) => (
@@ -495,7 +505,11 @@ function App() {
                 <button
                   type="button"
                   onClick={resetToPopular}
-                  className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+                  className={`px-6 py-3 border rounded-lg font-medium transition-colors duration-300 ${
+                    darkMode 
+                      ? 'border-gray-600 text-gray-300 hover:bg-gray-700' 
+                      : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+                  }`}
                 >
                   Clear Filters
                 </button>
@@ -503,14 +517,20 @@ function App() {
             </div>
 
             {error && (
-              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+              <div className={`border px-4 py-3 rounded-lg transition-colors duration-300 ${
+                darkMode 
+                  ? 'bg-red-900 border-red-700 text-red-200' 
+                  : 'bg-red-50 border-red-200 text-red-700'
+              }`}>
                 {error}
               </div>
             )}
 
             {/* Real-time search indicator */}
             {(searchTerm || selectedCountry) && !loading && (
-              <div className="text-sm text-gray-600 mt-2">
+              <div className={`text-sm mt-2 transition-colors duration-300 ${
+                darkMode ? 'text-gray-400' : 'text-gray-600'
+              }`}>
                 {searchTerm && selectedCountry 
                   ? `Filtering by "${searchTerm}" in ${selectedCountry}`
                   : searchTerm 
