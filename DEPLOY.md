@@ -67,36 +67,60 @@ For detailed Render deployment instructions, see [RENDER_DEPLOY.md](RENDER_DEPLO
 
 ---
 
-## 🏗️ Architecture Overview
+## 🌊 Digital Ocean
 
-### Render.com Services
-```
-┌─────────────────────────────────────────────────┐
-│                 Render.com                      │
-├─────────────────────────────────────────────────┤
-│  Frontend (Static Site)                        │
-│  ├─ React Build                                │
-│  ├─ CDN Distribution                           │
-│  └─ Custom Domain Support                      │
-├─────────────────────────────────────────────────┤
-│  Backend (Web Service)                         │
-│  ├─ FastAPI Application                        │
-│  ├─ Auto-scaling                               │
-│  ├─ Health Checks                              │
-│  └─ Environment Variables                      │
-├─────────────────────────────────────────────────┤
-│  External Services                             │
-│  ├─ MongoDB Atlas (Database)                   │
-│  ├─ Radio Browser API                          │
-│  └─ GitHub (Source Code)                       │
-└─────────────────────────────────────────────────┘
+Digital Ocean offers multiple deployment options: App Platform, Droplets, and Kubernetes.
+
+### Option A: App Platform (Recommended for DO)
+
+#### Prerequisites
+- Digital Ocean account
+- GitHub repository
+
+#### 1. Database Setup
+
+Create a MongoDB database cluster:
+- Go to Digital Ocean Dashboard → Databases
+- Create MongoDB cluster (or use MongoDB Atlas)
+- Note the connection details
+
+#### 2. Deploy Application
+
+1. **Create App**:
+   - Go to Apps → Create App
+   - Connect GitHub repository
+   - Configure components:
+
+**Backend Component:**
+```yaml
+Name: backend
+Type: Web Service
+Source Directory: /backend
+Build Command: pip install -r requirements.txt
+Run Command: uvicorn server:app --host 0.0.0.0 --port $PORT
 ```
 
-### Cost Estimation
-- **Frontend (Static Site)**: $0/month (free tier)
-- **Backend (Web Service)**: $7/month (Starter plan)
-- **MongoDB Atlas**: $0/month (free tier, 512MB)
-- **Total**: ~$7/month
+**Frontend Component:**
+```yaml
+Name: frontend
+Type: Static Site
+Source Directory: /frontend
+Build Command: yarn install && yarn build
+Output Directory: build
+```
+
+2. **Environment Variables**:
+
+**Backend:**
+```
+MONGO_URL=mongodb://username:password@your-db-host:27017/global_radio
+DB_NAME=global_radio
+```
+
+**Frontend:**
+```
+REACT_APP_BACKEND_URL=https://your-app-name.ondigitalocean.app
+```
 
 ---
 
