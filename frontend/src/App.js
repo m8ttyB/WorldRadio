@@ -33,7 +33,6 @@ function App() {
   useEffect(() => {
     try {
       localStorage.setItem('globalRadioDarkMode', JSON.stringify(darkMode));
-      console.log('Dark mode saved to localStorage:', darkMode);
       
       // Apply dark mode class to document
       if (darkMode) {
