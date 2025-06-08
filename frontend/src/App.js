@@ -319,25 +319,33 @@ function App() {
               </div>
             </div>
             
-            {/* Floating Current Playing - Compact */}
+            {/* Floating Current Playing - Fixed Width with Scrolling */}
             {currentStation && (
-              <div className="flex items-center space-x-3 bg-black text-white rounded-lg px-3 py-2 shadow-md max-w-sm md:max-w-md">
+              <div className="flex items-center space-x-3 bg-black text-white rounded-lg px-3 py-2 shadow-md player-controls">
                 <div className="flex items-center space-x-2 flex-1 min-w-0">
-                  <div className="w-5 h-5 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+                  <div className="w-5 h-5 bg-white bg-opacity-20 rounded-full flex items-center justify-center flex-shrink-0">
                     <span className="text-xs">📻</span>
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="text-xs md:text-sm font-medium truncate">{currentStation.name}</h3>
-                    <p className="text-gray-300 text-xs truncate">{currentStation.country}</p>
+                  <div className="station-info flex-1 min-w-0">
+                    <div className="station-name">
+                      <ScrollingText 
+                        text={currentStation.name} 
+                        className="text-xs md:text-sm font-medium"
+                        maxLength={20}
+                      />
+                    </div>
+                    <div className="text-container">
+                      <span className="text-gray-300 text-xs truncate">{currentStation.country}</span>
+                    </div>
                   </div>
                   {isPlaying && (
-                    <div className="flex items-center text-xs text-gray-300 ml-1">
+                    <div className="flex items-center text-xs text-gray-300 ml-1 flex-shrink-0">
                       <div className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse mr-1"></div>
                       <span className="hidden sm:inline text-xs">LIVE</span>
                     </div>
                   )}
                 </div>
-                <div className="flex space-x-1 ml-1">
+                <div className="flex space-x-1 ml-1 flex-shrink-0">
                   <button
                     onClick={() => playStation(currentStation)}
                     className="w-6 h-6 md:w-7 md:h-7 bg-white text-black rounded-full flex items-center justify-center hover:bg-gray-200 transition-colors text-xs"
