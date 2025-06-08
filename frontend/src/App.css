@@ -102,7 +102,77 @@ button,
   transform: scale(1.05);
 }
 
-/* Favorite button styles */
+/* Scrolling text animation for long station names */
+@keyframes scroll-text {
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+.scrolling-text {
+  display: inline-block;
+  white-space: nowrap;
+  animation: scroll-text 10s linear infinite;
+}
+
+.text-container {
+  overflow: hidden;
+  white-space: nowrap;
+  position: relative;
+}
+
+.text-container.scrollable {
+  mask-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    black 10%,
+    black 90%,
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    black 10%,
+    black 90%,
+    transparent 100%
+  );
+}
+
+/* Fixed width player controls */
+.player-controls {
+  min-width: 300px;
+  max-width: 400px;
+}
+
+.station-info {
+  flex: 1;
+  min-width: 0; /* Important for text overflow */
+  margin-right: 1rem;
+}
+
+.station-name {
+  max-width: 250px;
+  overflow: hidden;
+}
+
+.station-name.long-text {
+  animation: scroll-text 8s linear infinite;
+  animation-delay: 2s;
+}
+
+/* Pause scrolling on hover */
+.station-name.long-text:hover {
+  animation-play-state: paused;
+}
+
+/* Header player controls - fixed positioning */
+.header-player {
+  min-width: 280px;
+  max-width: 350px;
+}
 .favorite-button {
   position: absolute;
   top: 12px;
