@@ -544,29 +544,25 @@ function App() {
         )}
 
         {showFavorites && (
-          <div className="bg-pink-50 border border-pink-200 rounded-lg p-6 mb-6">
+          <div className={`border rounded-lg p-6 mb-6 transition-colors duration-300 ${
+            darkMode 
+              ? 'bg-pink-900 border-pink-700' 
+              : 'bg-pink-50 border-pink-200'
+          }`}>
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-lg font-medium text-pink-900">Your Favorite Stations</h3>
-                <p className="text-pink-700 text-sm mt-1">
+                <h3 className={`text-lg font-medium transition-colors duration-300 ${
+                  darkMode ? 'text-pink-200' : 'text-pink-900'
+                }`}>Your Favorite Stations</h3>
+                <p className={`text-sm mt-1 transition-colors duration-300 ${
+                  darkMode ? 'text-pink-300' : 'text-pink-700'
+                }`}>
                   {favorites.length === 0 
                     ? "You haven't added any favorite stations yet. Click the ❤️ icon on any station to add it to your favorites!"
                     : `You have ${favorites.length} favorite station${favorites.length !== 1 ? 's' : ''}`
                   }
                 </p>
               </div>
-              {favorites.length > 0 && (
-                <button
-                  onClick={() => {
-                    if (window.confirm('Are you sure you want to clear all favorites?')) {
-                      clearAllFavorites();
-                    }
-                  }}
-                  className="text-pink-600 hover:text-pink-800 text-sm font-medium"
-                >
-                  Clear All
-                </button>
-              )}
             </div>
           </div>
         )}
