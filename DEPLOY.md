@@ -359,47 +359,22 @@ gcloud services enable monitoring.googleapis.com
 
 ---
 
-## 🏗️ Infrastructure as Code
+## 🔧 Environment Variables Reference
 
-### Terraform Configuration
+### Backend Environment Variables
 
-Our Terraform setup includes:
-- Backend Web Service
-- Frontend Static Site
-- Environment Variables
-- Custom Domains (optional)
+| Variable | Description | Example |
+|----------|-------------|---------|
+| `MONGO_URL` | MongoDB connection string | `mongodb+srv://user:pass@cluster.mongodb.net/` |
+| `DB_NAME` | Database name | `global_radio` |
+| `LOG_LEVEL` | Logging level | `INFO` |
+| `DEBUG` | Debug mode | `false` |
 
-### File Structure
-```
-deploy/
-├── terraform/
-│   ├── main.tf              # Main Terraform configuration
-│   ├── variables.tf         # Variable definitions
-│   ├── outputs.tf           # Output values
-│   ├── providers.tf         # Provider configuration
-│   └── terraform.tfvars     # Variable values
-├── .env.example             # Environment template
-├── Makefile                 # Automation commands
-└── scripts/
-    ├── deploy.sh            # Deployment script
-    ├── destroy.sh           # Cleanup script
-    └── health-check.sh      # Health verification
-```
+### Frontend Environment Variables
 
-### Terraform Commands
-```bash
-# Initialize Terraform
-make terraform-init
-
-# Plan deployment
-make terraform-plan
-
-# Deploy infrastructure
-make terraform-apply
-
-# Destroy infrastructure
-make terraform-destroy
-```
+| Variable | Description | Example |
+|----------|-------------|---------|
+| `REACT_APP_BACKEND_URL` | Backend API URL | `https://api.yourdomain.com` |
 
 ---
 
