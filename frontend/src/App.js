@@ -570,70 +570,76 @@ function App() {
         )}
 
         {/* Stations Grid */}
-        {!loading && (
+        {loading ? (
+          <div className="text-center py-12">
+            <div className="inline-block w-8 h-8 border-4 border-gray-300 border-t-black rounded-full animate-spin"></div>
+            <p className="text-gray-600 mt-4">Loading stations...</p>
+          </div>
+        ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {displayedStations.map((station) => (
+            {filteredStations.map((station) => (
               <div
                 key={station.stationuuid}
-                className={`border rounded-lg p-4 hover:shadow-md transition-all cursor-pointer relative duration-300 ${
+                className={`border rounded-lg p-4 hover:shadow-md transition-all cursor-pointer ${
                   currentStation && currentStation.stationuuid === station.stationuuid
-                    ? darkMode ? 'border-white bg-gray-800' : 'border-black bg-gray-50'
-                    : darkMode ? 'border-gray-600 hover:border-gray-500 bg-gray-800' : 'border-gray-200 hover:border-gray-300 bg-white'
+                    ? 'border-black bg-gray-50'
+                    : 'border-gray-200 hover:border-gray-300'
                 }`}
+                onClick={() => playStation(station)}
               >
-                {/* Favorite Button */}
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    toggleFavorite(station);
-                  }}
-                  className={`absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 ${
-                    isFavorite(station)
-                      ? darkMode ? 'bg-pink-900 text-pink-400 hover:bg-pink-800' : 'bg-pink-100 text-pink-600 hover:bg-pink-200'
-                      : darkMode ? 'bg-gray-700 text-gray-500 hover:bg-gray-600 hover:text-pink-400' : 'bg-gray-100 text-gray-400 hover:bg-gray-200 hover:text-pink-500'
-                  }`}
-                  title={isFavorite(station) ? 'Remove from favorites' : 'Add to favorites'}
-                  data-testid={`favorite-btn-${station.stationuuid}`}
-                  aria-label={isFavorite(station) ? 'Remove from favorites' : 'Add to favorites'}
-                >
-                  {isFavorite(station) ? '❤️' : '🤍'}
-                </button>
-
-                <div 
-                  onClick={() => playStation(station)}
-                  className="pr-10"
-                >
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="flex-1 min-w-0">
-                      <h3 className={`font-medium truncate transition-colors duration-300 ${
-                        darkMode ? 'text-white' : 'text-gray-900'
-                      }`}>{station.name}</h3>
-                      <p className={`text-sm transition-colors duration-300 ${
-                        darkMode ? 'text-gray-400' : 'text-gray-600'
-                      }`}>{station.country}</p>
-                    </div>
-                    <button className={`ml-3 text-xl transition-colors duration-300 ${
-                      darkMode ? 'text-gray-500 hover:text-white' : 'text-gray-400 hover:text-black'
-                    }`}>
+                <div className="flex items-start justify-between mb-3">
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-medium text-gray-900 truncate">{station.name}</h3>
+                    <p className="text-gray-600 text-sm">{station.country}</p>
+                  </div>
+                  <div className="flex items-center space-x-2 ml-3">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleFavorite(station);
+                      }}
+                      className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${
+                        isFavorite(station)
+                          ? 'text-red-500 hover:text-red-600'
+                          : 'text-gray-400 hover:text-red-500'
+                      }`}
+                      title={isFavorite(station) ? 'Remove from favorites' : 'Add to favorites'}
+                    >
+                      {isFavorite(station) ? '❤️' : '🤍'}
+                    </button>
+                    <button className="text-xl text-gray-400 hover:text-black transition-colors">
                       {currentStation && currentStation.stationuuid === station.stationuuid && isPlaying ? '⏸' : '▶'}
                     </button>
                   </div>
-                  
-                  {station.tags && (
-                    <p className={`text-xs mb-2 truncate transition-colors duration-300 ${
-                      darkMode ? 'text-gray-500' : 'text-gray-500'
-                    }`}>{station.tags}</p>
-                  )}
-                  
-                  <div className={`flex justify-between items-center text-xs transition-colors duration-300 ${
-                    darkMode ? 'text-gray-500' : 'text-gray-400'
-                  }`}>
-                    <span>{station.votes || 0} votes</span>
-                    {station.bitrate && <span>{station.bitrate} kbps</span>}
-                  </div>
+                </div>
+                
+                {station.tags && (
+                  <p className="text-gray-500 text-xs mb-2 truncate">{station.tags}</p>
+                )}
+                
+                <div className="flex justify-between items-center text-xs text-gray-400">
+                  <span>{station.votes || 0} votes</span>
+                  {station.bitrate && <span>{station.bitrate} kbps</span>}
                 </div>
               </div>
             ))}
+          </div>
+        )}
+
+        {/* Empty State */}
+        {!loading && filteredStations.length === 0 && (
+          <div className="text-center py-12">
+            {activeFilter === 'favorites' ? (
+              <>
+                <p className="text-gray-900 text-xl font-light">No favorite stations yet</p>
+                <p className="text-gray-500 mt-2">Click the heart icon on any station to add it to your favorites</p>
+              </>
+            ) : (
+              <>
+                <p className="text-gray-900 text-xl font-light">No stations found</p>
+                <p className="text-gray-500 mt-2">Try adjusting your search criteria</p>
+              </>
+            )}
           </div>
         )}
 
