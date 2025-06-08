@@ -17,7 +17,16 @@ function App() {
   const [favoritesLoaded, setFavoritesLoaded] = useState(false);
   const [showFavorites, setShowFavorites] = useState(false);
   const [searchTimeout, setSearchTimeout] = useState(null);
-  const [darkMode, setDarkMode] = useState(false);
+  const [darkMode, setDarkMode] = useState(() => {
+    // Initialize dark mode from localStorage synchronously
+    try {
+      const savedDarkMode = localStorage.getItem('globalRadioDarkMode');
+      return savedDarkMode ? JSON.parse(savedDarkMode) : false;
+    } catch (error) {
+      console.error('Error loading initial dark mode:', error);
+      return false;
+    }
+  });
   const audioRef = useRef(null);
 
   // Load dark mode preference from localStorage
