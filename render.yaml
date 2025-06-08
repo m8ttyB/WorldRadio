@@ -1,0 +1,65 @@
+services:
+  # Backend API Service
+  - type: web
+    name: global-radio-backend
+    env: python
+    region: oregon
+    plan: starter
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn server:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: MONGO_URL
+        fromDatabase:
+          name: global-radio-db
+          property: connectionString
+      - key: DB_NAME
+        value: global_radio
+    rootDir: backend
+
+  # Frontend Static Site
+  - type: web
+    name: global-radio-frontend
+    env: static
+    region: oregon
+    plan: starter
+    buildCommand: yarn install && yarn build
+    staticPublishPath: ./build
+    pullRequestPreviewsEnabled: false
+    headers:
+      - path: /*
+        name: X-Frame-Options
+        value: SAMEORIGIN
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /*
+        name: X-XSS-Protection
+        value: 1; mode=block
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: NODE_VERSION
+        value: 18
+      - key: REACT_APP_BACKEND_URL
+        fromService:
+          type: web
+          name: global-radio-backend
+          property: host
+    rootDir: frontend
+
+databases:
+  # Note: Render doesn't support MongoDB, so we'll use MongoDB Atlas
+  # This is a placeholder - you'll need to create a MongoDB Atlas cluster
+  # and provide the connection string as an environment variable
+  - name: global-radio-db
+    databaseName: global_radio
+    user: global_radio_user
+    region: oregon
+    plan: starter
+    # Note: This will create a PostgreSQL database as placeholder
+    # You should replace with MongoDB Atlas connection string in environment variables
