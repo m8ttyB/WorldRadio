@@ -558,16 +558,16 @@ function App() {
         )}
 
         {/* Loading State */}
-        {loading && (
+        {loading ? (
           <div className="text-center py-12">
-            <div className={`inline-block w-6 h-6 border-2 rounded-full animate-spin transition-colors duration-300 ${
+            <div className={`inline-block w-8 h-8 border-4 rounded-full animate-spin transition-colors duration-300 ${
               darkMode ? 'border-gray-600 border-t-white' : 'border-gray-300 border-t-black'
             }`}></div>
             <p className={`mt-4 transition-colors duration-300 ${
               darkMode ? 'text-gray-400' : 'text-gray-600'
             }`}>Loading stations...</p>
           </div>
-        )}
+        )
 
         {/* Stations Grid */}
         {loading ? (
