@@ -221,56 +221,141 @@ certbot --nginx -d yourdomain.com -d www.yourdomain.com
 
 ---
 
-## 📋 Manual Setup
+## ☁️ Google Cloud Platform (GCP)
 
-### 1. MongoDB Atlas Setup
+GCP offers multiple deployment options. We'll use Cloud Run for simplicity and cost-effectiveness.
 
-1. **Create MongoDB Atlas Account**
-   - Go to [MongoDB Atlas](https://cloud.mongodb.com/)
-   - Create a free account and cluster
+### Prerequisites
+- GCP account with billing enabled
+- Google Cloud SDK installed locally
 
-2. **Configure Database**
-   ```bash
-   # Create database user
-   # Whitelist IP addresses (0.0.0.0/0 for Render)
-   # Get connection string
-   ```
+### 1. Setup GCP Project
 
-3. **Connection String Format**
-   ```
-   mongodb+srv://username:password@cluster.mongodb.net/global_radio
-   ```
+```bash
+# Install Google Cloud SDK
+curl https://sdk.cloud.google.com | bash
+exec -l $SHELL
 
-### 2. GitHub Repository Setup
+# Login and create project
+gcloud auth login
+gcloud projects create global-radio-app --name="Global Radio"
+gcloud config set project global-radio-app
 
-1. **Fork/Clone Repository**
-   ```bash
-   git clone https://github.com/yourusername/global-radio
-   cd global-radio
-   ```
+# Enable required APIs
+gcloud services enable run.googleapis.com
+gcloud services enable cloudbuild.googleapis.com
+gcloud services enable sqladmin.googleapis.com
+```
 
-2. **Create Environment Files**
-   ```bash
-   # Backend environment
-   cp backend/.env.example backend/.env
-   
-   # Frontend environment  
-   cp frontend/.env.example frontend/.env
-   
-   # Deployment environment
-   cp deploy/.env.example deploy/.env
-   ```
+### 2. Database Setup
 
-### 3. Render.com Account Setup
+Since GCP doesn't offer managed MongoDB, use MongoDB Atlas (follow setup from Render section).
 
-1. **Create Account**
-   - Register at [Render.com](https://render.com/register)
-   - Connect your GitHub account
+### 3. Backend Deployment (Cloud Run)
 
-2. **Generate API Key**
-   - Go to Account Settings → API Keys
-   - Create new API key
-   - Save securely
+#### Prepare Dockerfile
+Create `backend/Dockerfile.gcp`:
+
+```dockerfile
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Install dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy application
+COPY . .
+
+# Run on Cloud Run port
+CMD exec uvicorn server:app --host 0.0.0.0 --port $PORT
+```
+
+#### Deploy Backend
+
+```bash
+# Build and deploy
+cd backend
+gcloud builds submit --tag gcr.io/global-radio-app/backend
+gcloud run deploy global-radio-backend \
+  --image gcr.io/global-radio-app/backend \
+  --platform managed \
+  --region us-central1 \
+  --allow-unauthenticated \
+  --set-env-vars MONGO_URL=your-mongodb-atlas-url,DB_NAME=global_radio
+
+# Get backend URL
+gcloud run services describe global-radio-backend --region us-central1 --format 'value(status.url)'
+```
+
+### 4. Frontend Deployment (Firebase Hosting)
+
+```bash
+# Install Firebase CLI
+npm install -g firebase-tools
+
+# Initialize Firebase
+cd frontend
+firebase login
+firebase init hosting
+
+# Configure firebase.json
+```
+
+**firebase.json:**
+```json
+{
+  "hosting": {
+    "public": "build",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  }
+}
+```
+
+```bash
+# Set environment variable and build
+echo "REACT_APP_BACKEND_URL=https://your-backend-url.run.app" > .env.production
+yarn build
+
+# Deploy
+firebase deploy
+```
+
+### 5. Custom Domain (Optional)
+
+#### Backend Domain (Cloud Run):
+```bash
+gcloud run domain-mappings create \
+  --service global-radio-backend \
+  --domain api.yourdomain.com \
+  --region us-central1
+```
+
+#### Frontend Domain (Firebase):
+```bash
+firebase hosting:channel:deploy live --site yourdomain.com
+```
+
+### 6. Monitoring and Logging
+
+```bash
+# View backend logs
+gcloud run services logs read global-radio-backend --region us-central1
+
+# Set up monitoring
+gcloud services enable monitoring.googleapis.com
+```
 
 ---
 
