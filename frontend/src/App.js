@@ -107,9 +107,7 @@ function App() {
   // Save favorites to localStorage whenever favorites change (but only after initial load)
   useEffect(() => {
     if (favoritesLoaded) {
-      console.log('Saving favorites to localStorage:', favorites.length, 'stations');
       localStorage.setItem('globalRadioFavorites', JSON.stringify(favorites));
-      console.log('Favorites saved successfully');
     }
   }, [favorites, favoritesLoaded]);
 
