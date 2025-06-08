@@ -341,23 +341,7 @@ function App() {
     performSearch(searchTerm, value);
   };
 
-  const toggleFavorite = (station) => {
-    setFavorites(prevFavorites => {
-      const isAlreadyFavorite = prevFavorites.some(fav => fav.stationuuid === station.stationuuid);
-      
-      if (isAlreadyFavorite) {
-        // Remove from favorites
-        return prevFavorites.filter(fav => fav.stationuuid !== station.stationuuid);
-      } else {
-        // Add to favorites
-        return [...prevFavorites, station];
-      }
-    });
-  };
 
-  const isFavorite = (station) => {
-    return favorites.some(fav => fav.stationuuid === station.stationuuid);
-  };
 
   const showFavoriteStations = () => {
     setShowFavorites(true);
