@@ -156,6 +156,10 @@ function App() {
 
       console.log('Playing station:', station.name, 'URL:', station.url_resolved || station.url);
 
+      // Always set the current station first for UI update
+      setCurrentStation(station);
+      setError(''); // Clear any previous errors
+      
       // Register click with our backend
       try {
         await fetch(`${API}/radio/stations/${station.stationuuid}/click`, {
@@ -166,9 +170,6 @@ function App() {
         console.log('Click registration failed (non-critical):', e);
       }
 
-      setCurrentStation(station);
-      setError(''); // Clear any previous errors
-      
       // Set the audio source
       const audioUrl = station.url_resolved || station.url;
       console.log('Setting audio source to:', audioUrl);
@@ -183,12 +184,14 @@ function App() {
         console.error('Audio playback error:', playError);
         setError(`Cannot play "${station.name}". This station may be offline or blocked by browser.`);
         setIsPlaying(false);
-        // Keep the station selected even if playback fails so we can see the UI
-        // setCurrentStation(null);
+        // DON'T clear the currentStation so we can still see the UI
+        console.log('Audio failed but keeping station selected for UI testing');
       }
     } catch (err) {
       console.error('Error in playStation function:', err);
       setError('Playback failed. Please try another station.');
+      // Still keep the station selected for UI purposes
+      setCurrentStation(station);
     }
   };
 
