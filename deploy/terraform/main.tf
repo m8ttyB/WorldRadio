@@ -60,7 +60,7 @@ resource "render_static_site" "frontend" {
   # Environment variables for build
   env_vars = {
     REACT_APP_BACKEND_URL = var.backend_domain != "" ? "https://${var.backend_domain}" : render_web_service.backend.url
-    NODE_VERSION          = "18"
+    NODE_VERSION          = "20"
     YARN_VERSION          = "1.22.19"
   }
 
