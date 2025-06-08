@@ -371,37 +371,85 @@ function App() {
       />
       
       {/* Header */}
-      <header className="border-b border-gray-200 bg-white sticky top-0 z-10">
+      <header className={`border-b sticky top-0 z-10 shadow-sm transition-colors duration-300 ${
+        darkMode 
+          ? 'border-gray-700 bg-gray-900' 
+          : 'border-gray-200 bg-white'
+      }`}>
         <div className="max-w-6xl mx-auto px-4 py-4">
-          <div className="flex flex-col space-y-4">
-            {/* Top row - Logo and current playing */}
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 bg-black rounded-full flex items-center justify-center">
-                  <span className="text-white text-sm font-bold">R</span>
-                </div>
-                <div>
-                  <h1 className="text-2xl font-light text-black">Global Radio</h1>
-                  <p className="text-gray-500 text-sm">Worldwide stations</p>
-                </div>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors duration-300 ${
+                darkMode ? 'bg-white' : 'bg-black'
+              }`}>
+                <span className={`text-sm font-bold ${darkMode ? 'text-black' : 'text-white'}`}>R</span>
               </div>
-              
+              <div>
+                <h1 className={`text-2xl font-light transition-colors duration-300 ${
+                  darkMode ? 'text-white' : 'text-black'
+                }`}>Global Radio</h1>
+                <p className={`text-sm transition-colors duration-300 ${
+                  darkMode ? 'text-gray-400' : 'text-gray-500'
+                }`}>Worldwide stations</p>
+              </div>
+            </div>
+
+            <div className="flex items-center space-x-4">
+              {/* Dark Mode Toggle */}
+              <button
+                onClick={toggleDarkMode}
+                className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 ${
+                  darkMode 
+                    ? 'bg-gray-700 text-yellow-400 hover:bg-gray-600' 
+                    : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
+                }`}
+                title={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+              >
+                {darkMode ? '☀️' : '🌙'}
+              </button>
+
+              {/* Floating Current Playing - Fixed Width with Scrolling */}
               {currentStation && (
-                <div className="hidden lg:flex items-center space-x-4">
-                  <div className="text-right">
-                    <p className="font-medium text-gray-900">{currentStation.name}</p>
-                    <p className="text-sm text-gray-500">{currentStation.country}</p>
+                <div className={`flex items-center space-x-3 rounded-lg px-3 py-2 shadow-md player-controls transition-colors duration-300 ${
+                  darkMode ? 'bg-gray-800 text-white' : 'bg-black text-white'
+                }`}>
+                  <div className="flex items-center space-x-2 flex-1 min-w-0">
+                    <div className="w-5 h-5 bg-white bg-opacity-20 rounded-full flex items-center justify-center flex-shrink-0">
+                      <span className="text-xs">📻</span>
+                    </div>
+                    <div className="station-info flex-1 min-w-0">
+                      <div className="station-name">
+                        <ScrollingText 
+                          text={currentStation.name} 
+                          className="text-xs md:text-sm font-medium"
+                          maxLength={15}
+                        />
+                      </div>
+                      <div className="text-container">
+                        <span className="text-gray-300 text-xs truncate">{currentStation.country}</span>
+                      </div>
+                    </div>
+                    {isPlaying && (
+                      <div className="flex items-center text-xs text-gray-300 ml-1 flex-shrink-0">
+                        <div className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse mr-1"></div>
+                        <span className="hidden sm:inline text-xs">LIVE</span>
+                      </div>
+                    )}
                   </div>
-                  <div className="flex space-x-2">
+                  <div className="flex space-x-1 ml-1 flex-shrink-0">
                     <button
                       onClick={() => playStation(currentStation)}
-                      className="w-10 h-10 bg-black text-white rounded-full flex items-center justify-center hover:bg-gray-800 transition-colors"
+                      className="w-6 h-6 md:w-7 md:h-7 bg-white text-black rounded-full flex items-center justify-center hover:bg-gray-200 transition-colors text-xs"
+                      title={isPlaying ? 'Pause' : 'Play'}
                     >
                       {isPlaying ? '⏸' : '▶'}
                     </button>
                     <button
                       onClick={stopPlayback}
-                      className="w-10 h-10 bg-gray-200 text-gray-700 rounded-full flex items-center justify-center hover:bg-gray-300 transition-colors"
+                      className={`w-6 h-6 md:w-7 md:h-7 rounded-full flex items-center justify-center transition-colors text-xs ${
+                        darkMode ? 'bg-gray-600 text-white hover:bg-gray-500' : 'bg-gray-700 text-white hover:bg-gray-600'
+                      }`}
+                      title="Stop"
                     >
                       ⏹
                     </button>
@@ -409,7 +457,7 @@ function App() {
                 </div>
               )}
             </div>
-          </div>
+            </div>
         </div>
       </header>
 
