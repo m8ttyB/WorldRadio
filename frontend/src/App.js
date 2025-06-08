@@ -17,7 +17,31 @@ function App() {
   const [favoritesLoaded, setFavoritesLoaded] = useState(false);
   const [showFavorites, setShowFavorites] = useState(false);
   const [searchTimeout, setSearchTimeout] = useState(null);
+  const [darkMode, setDarkMode] = useState(false);
   const audioRef = useRef(null);
+
+  // Load dark mode preference from localStorage
+  useEffect(() => {
+    const savedDarkMode = localStorage.getItem('globalRadioDarkMode');
+    if (savedDarkMode !== null) {
+      setDarkMode(JSON.parse(savedDarkMode));
+    }
+  }, []);
+
+  // Save dark mode preference to localStorage
+  useEffect(() => {
+    localStorage.setItem('globalRadioDarkMode', JSON.stringify(darkMode));
+    // Apply dark mode class to document
+    if (darkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [darkMode]);
+
+  const toggleDarkMode = () => {
+    setDarkMode(!darkMode);
+  };
 
   // Helper function to check if text needs scrolling
   const needsScrolling = (text, maxLength = 30) => {
