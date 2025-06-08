@@ -619,6 +619,8 @@ function App() {
                       : darkMode ? 'bg-gray-700 text-gray-500 hover:bg-gray-600 hover:text-pink-400' : 'bg-gray-100 text-gray-400 hover:bg-gray-200 hover:text-pink-500'
                   }`}
                   title={isFavorite(station) ? 'Remove from favorites' : 'Add to favorites'}
+                  data-testid={`favorite-btn-${station.stationuuid}`}
+                  aria-label={isFavorite(station) ? 'Remove from favorites' : 'Add to favorites'}
                 >
                   {isFavorite(station) ? '❤️' : '🤍'}
                 </button>
