@@ -19,6 +19,24 @@ function App() {
   const [searchTimeout, setSearchTimeout] = useState(null);
   const audioRef = useRef(null);
 
+  // Helper function to check if text needs scrolling
+  const needsScrolling = (text, maxLength = 30) => {
+    return text && text.length > maxLength;
+  };
+
+  // Helper function to create scrolling text component
+  const ScrollingText = ({ text, className = "", maxLength = 30 }) => {
+    const shouldScroll = needsScrolling(text, maxLength);
+    
+    return (
+      <div className={`text-container ${shouldScroll ? 'scrollable' : ''}`}>
+        <span className={`${className} ${shouldScroll ? 'long-text' : ''}`}>
+          {text}
+        </span>
+      </div>
+    );
+  };
+
   // Load favorites from localStorage on component mount
   useEffect(() => {
     const loadFavorites = () => {
