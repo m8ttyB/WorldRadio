@@ -141,6 +141,8 @@ function App() {
         return;
       }
 
+      console.log('Playing station:', station.name, 'URL:', station.url_resolved || station.url);
+
       // Register click with our backend
       try {
         await fetch(`${API}/radio/stations/${station.stationuuid}/click`, {
@@ -148,22 +150,31 @@ function App() {
         });
       } catch (e) {
         // Ignore click registration errors
+        console.log('Click registration failed (non-critical):', e);
       }
 
       setCurrentStation(station);
-      audioRef.current.src = station.url_resolved || station.url;
+      setError(''); // Clear any previous errors
+      
+      // Set the audio source
+      const audioUrl = station.url_resolved || station.url;
+      console.log('Setting audio source to:', audioUrl);
+      audioRef.current.src = audioUrl;
       
       try {
+        console.log('Attempting to play audio...');
         await audioRef.current.play();
         setIsPlaying(true);
-        setError('');
+        console.log('Audio started playing successfully');
       } catch (playError) {
-        console.error('Playback error:', playError);
-        setError(`Cannot play "${station.name}". This station may be offline.`);
+        console.error('Audio playback error:', playError);
+        setError(`Cannot play "${station.name}". This station may be offline or blocked by browser.`);
         setIsPlaying(false);
+        // Keep the station selected even if playback fails so we can see the UI
+        // setCurrentStation(null);
       }
     } catch (err) {
-      console.error('Error playing station:', err);
+      console.error('Error in playStation function:', err);
       setError('Playback failed. Please try another station.');
     }
   };
