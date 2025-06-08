@@ -4,15 +4,11 @@ This guide provides step-by-step instructions for deploying the Global Radio app
 
 ## 📋 Table of Contents
 
-- [Prerequisites](#prerequisites)
-- [Architecture Overview](#architecture-overview)
-- [Quick Deployment](#quick-deployment)
-- [Manual Setup](#manual-setup)
-- [Infrastructure as Code](#infrastructure-as-code)
-- [Environment Configuration](#environment-configuration)
-- [CI/CD Pipeline](#cicd-pipeline)
-- [Monitoring & Maintenance](#monitoring--maintenance)
-- [Troubleshooting](#troubleshooting)
+- [Render.com (Recommended)](#rendercom-recommended)
+- [Digital Ocean](#digital-ocean)
+- [Google Cloud Platform (GCP)](#google-cloud-platform-gcp)
+- [Environment Variables Reference](#environment-variables-reference)
+- [Post-Deployment Checklist](#post-deployment-checklist)
 
 ---
 
