@@ -35,7 +35,7 @@ A minimalist worldwide radio station streaming website that allows users to disc
 
 ## 📋 Prerequisites
 
-- **Node.js** (v18+ recommended)
+- **Node.js** (v20+ required for React Router v7)
 - **Python** (3.11+)
 - **Yarn** package manager
 - **MongoDB** (for backend data storage)
