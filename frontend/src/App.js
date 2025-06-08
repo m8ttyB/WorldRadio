@@ -110,7 +110,49 @@ function App() {
   useEffect(() => {
     fetchPopularStations();
     fetchCountries();
+    loadFavorites();
   }, []);
+
+  // Load favorites from localStorage
+  const loadFavorites = () => {
+    try {
+      const savedFavorites = localStorage.getItem('globalRadioFavorites');
+      if (savedFavorites) {
+        setFavorites(JSON.parse(savedFavorites));
+      }
+    } catch (error) {
+      console.error('Error loading favorites:', error);
+    }
+  };
+
+  // Save favorites to localStorage
+  const saveFavorites = (newFavorites) => {
+    try {
+      localStorage.setItem('globalRadioFavorites', JSON.stringify(newFavorites));
+      setFavorites(newFavorites);
+    } catch (error) {
+      console.error('Error saving favorites:', error);
+    }
+  };
+
+  // Toggle favorite status
+  const toggleFavorite = (station) => {
+    const isCurrentlyFavorite = favorites.some(fav => fav.stationuuid === station.stationuuid);
+    let newFavorites;
+    
+    if (isCurrentlyFavorite) {
+      newFavorites = favorites.filter(fav => fav.stationuuid !== station.stationuuid);
+    } else {
+      newFavorites = [...favorites, station];
+    }
+    
+    saveFavorites(newFavorites);
+  };
+
+  // Check if station is favorite
+  const isFavorite = (station) => {
+    return favorites.some(fav => fav.stationuuid === station.stationuuid);
+  };
 
   const fetchPopularStations = async () => {
     try {
