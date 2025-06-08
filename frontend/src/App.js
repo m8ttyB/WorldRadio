@@ -494,7 +494,11 @@ function App() {
               <div className="flex justify-end">
                 <button
                   type="button"
-                  onClick={resetToPopular}
+                  onClick={() => {
+                    setSearchTerm('');
+                    setSelectedCountry('');
+                    fetchPopularStations();
+                  }}
                   className={`px-6 py-3 border rounded-lg font-medium transition-colors duration-300 ${
                     darkMode 
                       ? 'border-gray-600 text-gray-300 hover:bg-gray-700' 
