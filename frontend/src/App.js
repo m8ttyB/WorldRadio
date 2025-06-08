@@ -446,20 +446,20 @@ function App() {
                   fetchPopularStations();
                 }
               }}
-              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+              className={`px-4 py-2 rounded-lg font-medium transition-colors duration-300 ${
                 !showFavorites 
-                  ? 'bg-black text-white' 
-                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                  ? darkMode ? 'bg-white text-black' : 'bg-black text-white'
+                  : darkMode ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
               }`}
             >
               All Stations
             </button>
             <button
               onClick={showFavoriteStations}
-              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+              className={`px-4 py-2 rounded-lg font-medium transition-colors duration-300 ${
                 showFavorites 
-                  ? 'bg-black text-white' 
-                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                  ? darkMode ? 'bg-white text-black' : 'bg-black text-white'
+                  : darkMode ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
               }`}
             >
               ❤️ Favorites ({favorites.length})
