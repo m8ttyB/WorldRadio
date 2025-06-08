@@ -122,31 +122,101 @@ DB_NAME=global_radio
 REACT_APP_BACKEND_URL=https://your-app-name.ondigitalocean.app
 ```
 
----
+### Option B: Droplets (VPS)
 
-## ⚡ Quick Deployment
+#### 1. Create Droplet
 
-### One-Command Deployment
 ```bash
-# Clone and deploy in one go
-make deploy-all
+# Create Ubuntu 22.04 droplet (minimum $6/month)
+# SSH into the server
+ssh root@your-droplet-ip
 ```
 
-### Step-by-Step Quick Deploy
+#### 2. Server Setup
+
 ```bash
-# 1. Clone repository
-git clone https://github.com/yourusername/global-radio
-cd global-radio
+# Update system
+apt update && apt upgrade -y
 
-# 2. Setup environment
-cp deploy/.env.example deploy/.env
-# Edit deploy/.env with your values
+# Install Docker and Docker Compose
+curl -fsSL https://get.docker.com -o get-docker.sh
+sh get-docker.sh
+curl -L "https://github.com/docker/compose/releases/download/v2.20.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+chmod +x /usr/local/bin/docker-compose
 
-# 3. Deploy infrastructure
-make terraform-deploy
+# Install Nginx
+apt install nginx -y
 
-# 4. Wait for deployment
-make status
+# Clone your repository
+git clone https://github.com/yourusername/global-radio.git /var/www/global-radio
+cd /var/www/global-radio
+```
+
+#### 3. Configure Environment
+
+```bash
+# Create environment files
+cp .env.example .env
+cp frontend/.env.example frontend/.env
+
+# Edit environment variables
+nano .env
+nano frontend/.env
+```
+
+#### 4. Deploy with Docker
+
+```bash
+# Start services
+docker-compose up -d
+
+# Check status
+docker-compose ps
+```
+
+#### 5. Nginx Configuration
+
+```bash
+# Create site configuration
+nano /etc/nginx/sites-available/global-radio
+```
+
+```nginx
+server {
+    listen 80;
+    server_name yourdomain.com www.yourdomain.com;
+
+    # Frontend
+    location / {
+        proxy_pass http://localhost:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+
+    # Backend API
+    location /api/ {
+        proxy_pass http://localhost:8001;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+```
+
+```bash
+# Enable site
+ln -s /etc/nginx/sites-available/global-radio /etc/nginx/sites-enabled/
+nginx -t
+systemctl restart nginx
+
+# Install SSL certificate
+apt install certbot python3-certbot-nginx -y
+certbot --nginx -d yourdomain.com -d www.yourdomain.com
 ```
 
 ---
