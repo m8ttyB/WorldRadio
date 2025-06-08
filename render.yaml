@@ -8,15 +8,21 @@ services:
     buildCommand: pip install -r requirements.txt
     startCommand: uvicorn server:app --host 0.0.0.0 --port $PORT
     healthCheckPath: /api/
+    autoDeploy: true
+    branch: main
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.0
       - key: MONGO_URL
-        fromDatabase:
-          name: global-radio-db
-          property: connectionString
+        sync: false
+        # This should be set manually in Render dashboard to MongoDB Atlas connection string
+        # Example: mongodb+srv://username:password@cluster.mongodb.net/global_radio
       - key: DB_NAME
         value: global_radio
+      - key: LOG_LEVEL
+        value: INFO
+      - key: DEBUG
+        value: false
     rootDir: backend
 
   # Frontend Static Site
@@ -27,8 +33,11 @@ services:
     plan: starter
     buildCommand: yarn install && yarn build
     staticPublishPath: ./build
-    pullRequestPreviewsEnabled: false
+    pullRequestPreviewsEnabled: true
+    autoDeploy: true
+    branch: main
     headers:
+      # Security headers
       - path: /*
         name: X-Frame-Options
         value: SAMEORIGIN
@@ -38,7 +47,21 @@ services:
       - path: /*
         name: X-XSS-Protection
         value: 1; mode=block
+      - path: /*
+        name: Referrer-Policy
+        value: strict-origin-when-cross-origin
+      # Cache headers for static assets
+      - path: /static/*
+        name: Cache-Control
+        value: public, max-age=31536000, immutable
+      - path: /*.js
+        name: Cache-Control
+        value: public, max-age=31536000, immutable
+      - path: /*.css
+        name: Cache-Control
+        value: public, max-age=31536000, immutable
     routes:
+      # SPA routing - all routes should serve index.html
       - type: rewrite
         source: /*
         destination: /index.html
@@ -50,16 +73,14 @@ services:
           type: web
           name: global-radio-backend
           property: host
+      - key: GENERATE_SOURCEMAP
+        value: false
+      - key: CI
+        value: false
     rootDir: frontend
 
-databases:
-  # Note: Render doesn't support MongoDB, so we'll use MongoDB Atlas
-  # This is a placeholder - you'll need to create a MongoDB Atlas cluster
-  # and provide the connection string as an environment variable
-  - name: global-radio-db
-    databaseName: global_radio
-    user: global_radio_user
-    region: oregon
-    plan: starter
-    # Note: This will create a PostgreSQL database as placeholder
-    # You should replace with MongoDB Atlas connection string in environment variables
+# Note: Render doesn't offer managed MongoDB
+# You'll need to:
+# 1. Create a MongoDB Atlas cluster (free tier available)
+# 2. Get the connection string
+# 3. Set MONGO_URL environment variable in Render dashboard
