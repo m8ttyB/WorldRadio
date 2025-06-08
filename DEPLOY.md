@@ -1,6 +1,6 @@
-# 🚀 Global Radio - Render.com Deployment Guide
+# 🚀 Global Radio - Cloud Deployment Guide
 
-This guide provides step-by-step instructions for deploying the Global Radio application to Render.com using Infrastructure as Code (Terraform) and automation tools.
+This guide provides step-by-step instructions for deploying the Global Radio application to popular cloud platforms.
 
 ## 📋 Table of Contents
 
