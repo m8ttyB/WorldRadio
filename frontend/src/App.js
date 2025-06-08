@@ -263,81 +263,51 @@ function App() {
     setIsPlaying(false);
   };
 
-  const resetToPopular = () => {
-    setSelectedCountry('');
-    setSearchTerm('');
-    setShowFavorites(false);
-    clearTimeout(searchTimeout);
-    fetchPopularStations();
-  };
-
-  const performSearch = async (searchValue = searchTerm, countryValue = selectedCountry) => {
-    // Don't search if we're showing favorites
-    if (showFavorites) return;
+  // Filter and search logic
+  const filteredStations = React.useMemo(() => {
+    let result = stations;
     
-    // If both search and country are empty, show popular stations
-    if (!searchValue.trim() && !countryValue) {
-      fetchPopularStations();
+    if (activeFilter === 'favorites') {
+      result = favorites;
+    }
+    
+    return result;
+  }, [stations, favorites, activeFilter]);
+
+  // Perform search
+  const performSearch = (term, country) => {
+    if (activeFilter === 'favorites') {
+      // When viewing favorites, don't perform API search
       return;
     }
-
-    try {
-      setLoading(true);
-      setError('');
-      
-      let url = `${API}/radio/stations/search?limit=100`;
-      
-      if (searchValue.trim()) {
-        url += `&name=${encodeURIComponent(searchValue.trim())}`;
-      }
-      if (countryValue) {
-        url += `&country=${encodeURIComponent(countryValue)}`;
-      }
-
-      const response = await fetch(url);
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      
-      if (Array.isArray(data)) {
-        setStations(data);
-      } else {
-        throw new Error('Invalid response format');
-      }
-    } catch (err) {
-      console.error('Error searching stations:', err);
-      setError('Search failed. Please try again.');
-    } finally {
-      setLoading(false);
+    
+    if (!term.trim() && !country) {
+      fetchPopularStations();
+    } else {
+      searchStations();
     }
   };
 
+  // Handle filter change
+  const handleFilterChange = (filter) => {
+    setActiveFilter(filter);
+    if (filter === 'all') {
+      // Reset search when switching back to all stations
+      if (!searchTerm.trim() && !selectedCountry) {
+        fetchPopularStations();
+      }
+    }
+  };
+
+  // Handle search input change
   const handleSearchChange = (value) => {
     setSearchTerm(value);
-    
-    // Clear existing timeout
-    if (searchTimeout) {
-      clearTimeout(searchTimeout);
-    }
-    
-    // Set new timeout for debounced search
-    const newTimeout = setTimeout(() => {
-      performSearch(value, selectedCountry);
-    }, 300); // 300ms delay
-    
-    setSearchTimeout(newTimeout);
+    performSearch(value, selectedCountry);
   };
 
+  // Handle country change
   const handleCountryChange = (value) => {
     setSelectedCountry(value);
-    // Clear any pending search timeout since country change should be immediate
-    if (searchTimeout) {
-      clearTimeout(searchTimeout);
-    }
-    // Perform immediate search with new country
     performSearch(searchTerm, value);
   };
 
