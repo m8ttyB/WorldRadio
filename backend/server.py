@@ -346,10 +346,21 @@ class StatusCheck(BaseModel):
 class StatusCheckCreate(BaseModel):
     client_name: str
 
+# Add root-level health check
+@app.get("/healthz")
+async def root_health_check():
+    """Root-level health check endpoint for Render.com"""
+    return {"status": "healthy"}
+
 # Add your routes to the router instead of directly to app
 @api_router.get("/")
 async def root():
     return {"message": "Hello World"}
+
+@api_router.get("/healthz")
+async def health_check():
+    """Health check endpoint for Render.com"""
+    return {"status": "healthy"}
 
 @api_router.post("/status", response_model=StatusCheck)
 async def create_status_check(input: StatusCheckCreate):

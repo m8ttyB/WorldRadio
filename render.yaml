@@ -1,86 +1,74 @@
+# ============================================================
+# Global Radio — Render Blueprint (render.yaml)
+# ============================================================
 services:
-  # Backend API Service
-  - type: web
-    name: global-radio-backend
-    env: python
-    region: oregon
-    plan: starter
-    buildCommand: pip install -r requirements.txt
-    startCommand: uvicorn server:app --host 0.0.0.0 --port $PORT
-    healthCheckPath: /api/
-    autoDeploy: true
-    branch: main
+  # ----------------------------------------------------------
+  # MongoDB • private service (pserv) + disk
+  # ----------------------------------------------------------
+  - type:            pserv               # private service ➜ internal network only
+    name:            mongodb
+    runtime:         docker
+    dockerfilePath:  Dockerfile.mongodb
+    plan:            starter             # change to 'pro' if you need bigger CPU/RAM
+    region:          oregon              # or frankfurt / ohio / singapore
+    disk:
+      name:          mongodb-data
+      mountPath:     /data/db
+      sizeGB:        2                   # pick a size that fits your data
     envVars:
-      - key: PYTHON_VERSION
-        value: 3.11.0
-      - key: MONGO_URL
-        sync: false
-        # This should be set manually in Render dashboard to MongoDB Atlas connection string
-        # Example: mongodb+srv://username:password@cluster.mongodb.net/global_radio
-      - key: DB_NAME
+      - key:   MONGO_INITDB_DATABASE
         value: global_radio
-      - key: LOG_LEVEL
-        value: INFO
-      - key: DEBUG
-        value: false
-    rootDir: backend
 
-  # Frontend Static Site
-  - type: web
-    name: global-radio-frontend
-    env: static
-    region: oregon
-    plan: starter
-    buildCommand: yarn install && yarn build
-    staticPublishPath: ./build
-    pullRequestPreviewsEnabled: true
-    autoDeploy: true
-    branch: main
-    headers:
-      # Security headers
-      - path: /*
-        name: X-Frame-Options
-        value: SAMEORIGIN
-      - path: /*
-        name: X-Content-Type-Options
-        value: nosniff
-      - path: /*
-        name: X-XSS-Protection
-        value: 1; mode=block
-      - path: /*
-        name: Referrer-Policy
-        value: strict-origin-when-cross-origin
-      # Cache headers for static assets
-      - path: /static/*
-        name: Cache-Control
-        value: public, max-age=31536000, immutable
-      - path: /*.js
-        name: Cache-Control
-        value: public, max-age=31536000, immutable
-      - path: /*.css
-        name: Cache-Control
-        value: public, max-age=31536000, immutable
-    routes:
-      # SPA routing - all routes should serve index.html
-      - type: rewrite
-        source: /*
-        destination: /index.html
+  # ----------------------------------------------------------
+  # FastAPI / Django / Flask backend
+  # ----------------------------------------------------------
+  - type:            web
+    name:            backend
+    runtime:         docker
+    rootDir:         .                   # context for the Dockerfile
+    dockerfilePath:  Dockerfile.backend
+    plan:            starter                # free • starter • standard • pro
+    healthCheckPath: /healthz            # root-level health check endpoint
+    # scaling:
+    #   minInstances: 1
+    #   maxInstances: 3
+    #   targetCPUPercent: 80
     envVars:
-      - key: NODE_VERSION
-        value: 18
-      - key: REACT_APP_BACKEND_URL
-        fromService:
-          type: web
-          name: global-radio-backend
-          property: host
-      - key: GENERATE_SOURCEMAP
-        value: false
-      - key: CI
-        value: false
-    rootDir: frontend
+      # direct literals
+      - key:   DB_NAME
+        value: global_radio
+      # point to Mongo running above (internal address is the service name)
+      - key:   MONGO_URL
+        value: mongodb://mongodb:27017
 
-# Note: Render doesn't offer managed MongoDB
-# You'll need to:
-# 1. Create a MongoDB Atlas cluster (free tier available)
-# 2. Get the connection string
-# 3. Set MONGO_URL environment variable in Render dashboard
+  # ----------------------------------------------------------
+  # React front-end (served by nginx in your Dockerfile)
+  # ----------------------------------------------------------
+  - type:            web
+    name:            frontend
+    runtime:         docker
+    rootDir:         .
+    dockerfilePath:  Dockerfile.frontend
+    plan:            starter
+    buildFilter:
+      paths:
+        - frontend/**
+        - Dockerfile.frontend
+        - nginx.conf
+    buildCommand: |
+      docker build -t frontend \
+        --build-arg REACT_APP_BACKEND_URL=${BACKEND_URL} \
+        -f Dockerfile.frontend .
+    envVars:
+      # Backend URL for React app
+      - key:   REACT_APP_BACKEND_URL
+        fromService:
+          name:   backend
+          type:   web
+          property: hostport          # resolves to host:port
+      # Nginx configuration
+      - key:   BACKEND_URL
+        fromService:
+          name:   backend
+          type:   web
+          property: hostport          # resolves to host:port
