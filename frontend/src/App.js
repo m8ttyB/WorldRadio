@@ -28,8 +28,6 @@ function App() {
   const ScrollingText = ({ text, className = "", maxLength = 30 }) => {
     const shouldScroll = needsScrolling(text, maxLength);
     
-    console.log('ScrollingText:', { text, textLength: text?.length, maxLength, shouldScroll });
-    
     return (
       <div className={`text-container ${shouldScroll ? 'scrollable' : ''}`}>
         <span className={`${className} ${shouldScroll ? 'long-text' : ''}`}>
