@@ -12,27 +12,58 @@ This guide provides step-by-step instructions for deploying the Global Radio app
 
 ---
 
-## 🛠️ Prerequisites
+## 🎨 Render.com (Recommended)
 
-### Required Tools
-- [Terraform](https://www.terraform.io/downloads) (>= 1.0)
-- [Render CLI](https://render.com/docs/cli) (optional)
-- [Make](https://www.gnu.org/software/make/) (for automation)
-- [Git](https://git-scm.com/) with repository access
-- [MongoDB Atlas Account](https://cloud.mongodb.com/) (free tier available)
+Render.com is a modern cloud platform with automatic builds and deployments from Git. **This is the recommended deployment method** as we provide a complete `render.yaml` blueprint.
 
-### Required Accounts
-- [Render.com Account](https://render.com/register) (free tier available)
-- [MongoDB Atlas Account](https://cloud.mongodb.com/register)
-- [GitHub Account](https://github.com/) (for repository connection)
+### Quick Deploy with Blueprint
 
-### API Keys & Tokens
-```bash
-# Required environment variables
-export RENDER_API_KEY="your-render-api-key"
-export MONGODB_URI="mongodb+srv://user:pass@cluster.mongodb.net/global_radio"
-export GITHUB_REPO_URL="https://github.com/yourusername/global-radio"
+1. **Fork Repository**: Fork this repository to your GitHub account
+2. **Create MongoDB Atlas**: Set up a free MongoDB Atlas cluster (see instructions below)
+3. **Deploy to Render**: 
+   - Go to [Render Dashboard](https://dashboard.render.com)
+   - Click "New" → "Blueprint"
+   - Connect your GitHub repository
+   - Render will automatically use the `render.yaml` configuration
+4. **Set Environment Variables**: Add your MongoDB Atlas connection string
+5. **Deploy**: Click "Apply" - Done! 🎉
+
+### MongoDB Atlas Setup (Required)
+
+Since Render doesn't offer managed MongoDB:
+
+1. Go to [MongoDB Atlas](https://cloud.mongodb.com/)
+2. Create a free cluster (512MB free tier)
+3. Create a database user with read/write permissions
+4. Whitelist IP addresses (use `0.0.0.0/0` for all IPs)
+5. Get connection string: `mongodb+srv://username:password@cluster.mongodb.net/global_radio`
+
+### Environment Variables for Render
+
+**Backend Service:**
 ```
+MONGO_URL=mongodb+srv://username:password@cluster.mongodb.net/global_radio
+DB_NAME=global_radio
+PYTHON_VERSION=3.11.0
+```
+
+**Frontend Service:**
+```
+REACT_APP_BACKEND_URL=https://your-backend-service.onrender.com
+NODE_VERSION=18
+```
+
+### Services Configuration
+
+The `render.yaml` blueprint creates:
+
+- **Backend**: FastAPI service with Python 3.11
+- **Frontend**: Static site with React build
+- **Auto Deploy**: Enabled from main branch
+- **Health Checks**: Configured for backend
+- **Security Headers**: Configured for frontend
+
+For detailed Render deployment instructions, see [RENDER_DEPLOY.md](RENDER_DEPLOY.md).
 
 ---
 
