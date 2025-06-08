@@ -339,85 +339,37 @@ function App() {
       />
       
       {/* Header */}
-      <header className={`border-b sticky top-0 z-10 shadow-sm transition-colors duration-300 ${
-        darkMode 
-          ? 'border-gray-700 bg-gray-900' 
-          : 'border-gray-200 bg-white'
-      }`}>
+      <header className="border-b border-gray-200 bg-white sticky top-0 z-10">
         <div className="max-w-6xl mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors duration-300 ${
-                darkMode ? 'bg-white' : 'bg-black'
-              }`}>
-                <span className={`text-sm font-bold ${darkMode ? 'text-black' : 'text-white'}`}>R</span>
+          <div className="flex flex-col space-y-4">
+            {/* Top row - Logo and current playing */}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <div className="w-8 h-8 bg-black rounded-full flex items-center justify-center">
+                  <span className="text-white text-sm font-bold">R</span>
+                </div>
+                <div>
+                  <h1 className="text-2xl font-light text-black">Global Radio</h1>
+                  <p className="text-gray-500 text-sm">Worldwide stations</p>
+                </div>
               </div>
-              <div>
-                <h1 className={`text-2xl font-light transition-colors duration-300 ${
-                  darkMode ? 'text-white' : 'text-black'
-                }`}>Global Radio</h1>
-                <p className={`text-sm transition-colors duration-300 ${
-                  darkMode ? 'text-gray-400' : 'text-gray-500'
-                }`}>Worldwide stations</p>
-              </div>
-            </div>
-
-            <div className="flex items-center space-x-4">
-              {/* Dark Mode Toggle */}
-              <button
-                onClick={toggleDarkMode}
-                className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 ${
-                  darkMode 
-                    ? 'bg-gray-700 text-yellow-400 hover:bg-gray-600' 
-                    : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
-                }`}
-                title={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
-              >
-                {darkMode ? '☀️' : '🌙'}
-              </button>
-
-              {/* Floating Current Playing - Fixed Width with Scrolling */}
+              
               {currentStation && (
-                <div className={`flex items-center space-x-3 rounded-lg px-3 py-2 shadow-md player-controls transition-colors duration-300 ${
-                  darkMode ? 'bg-gray-800 text-white' : 'bg-black text-white'
-                }`}>
-                  <div className="flex items-center space-x-2 flex-1 min-w-0">
-                    <div className="w-5 h-5 bg-white bg-opacity-20 rounded-full flex items-center justify-center flex-shrink-0">
-                      <span className="text-xs">📻</span>
-                    </div>
-                    <div className="station-info flex-1 min-w-0">
-                      <div className="station-name">
-                        <ScrollingText 
-                          text={currentStation.name} 
-                          className="text-xs md:text-sm font-medium"
-                          maxLength={15}
-                        />
-                      </div>
-                      <div className="text-container">
-                        <span className="text-gray-300 text-xs truncate">{currentStation.country}</span>
-                      </div>
-                    </div>
-                    {isPlaying && (
-                      <div className="flex items-center text-xs text-gray-300 ml-1 flex-shrink-0">
-                        <div className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse mr-1"></div>
-                        <span className="hidden sm:inline text-xs">LIVE</span>
-                      </div>
-                    )}
+                <div className="hidden lg:flex items-center space-x-4">
+                  <div className="text-right">
+                    <p className="font-medium text-gray-900">{currentStation.name}</p>
+                    <p className="text-sm text-gray-500">{currentStation.country}</p>
                   </div>
-                  <div className="flex space-x-1 ml-1 flex-shrink-0">
+                  <div className="flex space-x-2">
                     <button
                       onClick={() => playStation(currentStation)}
-                      className="w-6 h-6 md:w-7 md:h-7 bg-white text-black rounded-full flex items-center justify-center hover:bg-gray-200 transition-colors text-xs"
-                      title={isPlaying ? 'Pause' : 'Play'}
+                      className="w-10 h-10 bg-black text-white rounded-full flex items-center justify-center hover:bg-gray-800 transition-colors"
                     >
                       {isPlaying ? '⏸' : '▶'}
                     </button>
                     <button
                       onClick={stopPlayback}
-                      className={`w-6 h-6 md:w-7 md:h-7 rounded-full flex items-center justify-center transition-colors text-xs ${
-                        darkMode ? 'bg-gray-600 text-white hover:bg-gray-500' : 'bg-gray-700 text-white hover:bg-gray-600'
-                      }`}
-                      title="Stop"
+                      className="w-10 h-10 bg-gray-200 text-gray-700 rounded-full flex items-center justify-center hover:bg-gray-300 transition-colors"
                     >
                       ⏹
                     </button>
@@ -425,6 +377,79 @@ function App() {
                 </div>
               )}
             </div>
+
+            {/* Bottom row - Filters and Search */}
+            <div className="flex flex-col md:flex-row md:items-center space-y-3 md:space-y-0 md:space-x-4">
+              {/* Filter Tabs */}
+              <div className="flex space-x-1 bg-gray-100 rounded-lg p-1">
+                <button
+                  onClick={() => handleFilterChange('all')}
+                  className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                    activeFilter === 'all'
+                      ? 'bg-white text-black shadow-sm'
+                      : 'text-gray-600 hover:text-gray-900'
+                  }`}
+                >
+                  All Stations
+                </button>
+                <button
+                  onClick={() => handleFilterChange('favorites')}
+                  className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                    activeFilter === 'favorites'
+                      ? 'bg-white text-black shadow-sm'
+                      : 'text-gray-600 hover:text-gray-900'
+                  }`}
+                >
+                  Favorites ({favorites.length})
+                </button>
+              </div>
+
+              {/* Search Controls */}
+              <div className="flex-1 flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
+                <input
+                  type="text"
+                  placeholder="Search stations..."
+                  value={searchTerm}
+                  onChange={(e) => handleSearchChange(e.target.value)}
+                  disabled={activeFilter === 'favorites'}
+                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent disabled:bg-gray-100 disabled:text-gray-500"
+                />
+                
+                <select
+                  value={selectedCountry}
+                  onChange={(e) => handleCountryChange(e.target.value)}
+                  disabled={activeFilter === 'favorites'}
+                  className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent disabled:bg-gray-100 disabled:text-gray-500"
+                >
+                  <option value="">All Countries</option>
+                  {countries.map((country) => (
+                    <option key={country.name} value={country.name}>
+                      {country.name} ({country.stationcount})
+                    </option>
+                  ))}
+                </select>
+
+                {(searchTerm || selectedCountry) && activeFilter === 'all' && (
+                  <button
+                    onClick={() => {
+                      setSearchTerm('');
+                      setSelectedCountry('');
+                      fetchPopularStations();
+                    }}
+                    className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                  >
+                    Clear
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Error Message */}
+            {error && (
+              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+                {error}
+              </div>
+            )}
           </div>
         </div>
       </header>
