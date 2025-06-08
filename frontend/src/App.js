@@ -463,6 +463,36 @@ function App() {
 
       {/* Main Content */}
       <div className="max-w-6xl mx-auto px-4 py-6">
+        {/* Filter Tabs */}
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex space-x-4">
+            <button
+              onClick={() => {
+                setShowFavorites(false);
+                if (stations.length === 0 || showFavorites) {
+                  fetchPopularStations();
+                }
+              }}
+              className={`px-4 py-2 rounded-lg font-medium transition-colors duration-300 ${
+                !showFavorites 
+                  ? darkMode ? 'bg-white text-black' : 'bg-black text-white'
+                  : darkMode ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+              }`}
+            >
+              All Stations
+            </button>
+            <button
+              onClick={showFavoriteStations}
+              className={`px-4 py-2 rounded-lg font-medium transition-colors duration-300 ${
+                showFavorites 
+                  ? darkMode ? 'bg-white text-black' : 'bg-black text-white'
+                  : darkMode ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+              }`}
+            >
+              ❤️ Favorites ({favorites.length})
+            </button>
+          </div>
+        </div>
 
         {!showFavorites && (
           <div className={`rounded-lg p-6 mb-6 transition-colors duration-300 ${
