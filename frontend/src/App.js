@@ -274,45 +274,6 @@ function App() {
     return result;
   }, [stations, favorites, activeFilter]);
 
-  // Search stations function
-  const searchStations = async () => {
-    try {
-      setLoading(true);
-      setError('');
-      
-      const params = new URLSearchParams();
-      if (searchTerm.trim()) params.append('name', searchTerm.trim());
-      if (selectedCountry) params.append('country', selectedCountry);
-      params.append('limit', '100');
-      
-      const response = await fetch(`${API}/radio/stations/search?${params}`);
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      
-      if (Array.isArray(data)) {
-        setStations(data);
-      } else {
-        throw new Error('Invalid response format');
-      }
-    } catch (err) {
-      console.error('Error searching stations:', err);
-      setError('Unable to search stations. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Reset to popular stations
-  const resetToPopular = () => {
-    setSearchTerm('');
-    setSelectedCountry('');
-    fetchPopularStations();
-  };
-
   // Perform search
   const performSearch = (term, country) => {
     if (activeFilter === 'favorites') {
