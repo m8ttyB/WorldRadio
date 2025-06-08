@@ -345,7 +345,7 @@ function App() {
                       <ScrollingText 
                         text={currentStation.name} 
                         className="text-xs md:text-sm font-medium"
-                        maxLength={20}
+                        maxLength={15}
                       />
                     </div>
                     <div className="text-container">
