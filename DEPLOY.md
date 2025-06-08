@@ -444,37 +444,53 @@ CNAME api         your-backend-url
 
 ---
 
-## 🔄 CI/CD Pipeline
+## 🔍 Troubleshooting
 
-### GitHub Actions Workflow
+### Common Issues
 
-The deployment includes automated CI/CD:
+1. **CORS Errors**
+   - Verify `REACT_APP_BACKEND_URL` is correct
+   - Check backend CORS configuration
 
-```yaml
-# .github/workflows/deploy.yml
-name: Deploy to Render
-on:
-  push:
-    branches: [main]
-  
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Deploy Infrastructure
-        run: make deploy-ci
-        env:
-          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
-          MONGODB_URI: ${{ secrets.MONGODB_URI }}
-```
+2. **Database Connection Failed**
+   - Verify MongoDB connection string
+   - Check network access rules
+   - Confirm database user permissions
 
-### Deployment Stages
-1. **Code Push** → GitHub repository
-2. **Auto-trigger** → Render.com build
-3. **Backend Deploy** → API service update
-4. **Frontend Deploy** → Static site update
-5. **Health Check** → Verify deployment
+3. **Build Failures**
+   ```
+   Backend:
+   - Check requirements.txt has all dependencies
+   - Verify Python version compatibility
+   
+   Frontend:
+   - Check package.json dependencies
+   - Verify Node.js version
+   - Check for yarn.lock file
+   ```
+
+4. **MongoDB Connection Issues**
+   - Verify connection string format
+   - Check database user permissions
+   - Confirm network access settings
+   - Test connection from MongoDB Compass
+
+### Platform-Specific Issues
+
+#### Render.com
+- Build timeouts: Optimize dependencies
+- Memory limits: Upgrade plan if needed
+- Cold starts: Consider paid plan for faster spin-up
+
+#### Digital Ocean
+- Droplet resources: Monitor CPU/memory usage
+- Storage space: Set up log rotation
+- Security: Configure firewall rules
+
+#### GCP
+- Quotas: Check service quotas and limits
+- Billing: Monitor costs and set up alerts
+- Regions: Choose closest region for better performance
 
 ---
 
