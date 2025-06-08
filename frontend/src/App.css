@@ -122,56 +122,91 @@ button,
   overflow: hidden;
   white-space: nowrap;
   position: relative;
+  width: 100%;
 }
 
 .text-container.scrollable {
   mask-image: linear-gradient(
     90deg,
     transparent 0%,
-    black 10%,
-    black 90%,
+    black 15%,
+    black 85%,
     transparent 100%
   );
   -webkit-mask-image: linear-gradient(
     90deg,
     transparent 0%,
-    black 10%,
-    black 90%,
+    black 15%,
+    black 85%,
     transparent 100%
   );
 }
 
 /* Fixed width player controls */
 .player-controls {
-  min-width: 300px;
+  min-width: 320px;
   max-width: 400px;
+  width: 380px;
 }
 
 .station-info {
   flex: 1;
   min-width: 0; /* Important for text overflow */
-  margin-right: 1rem;
+  margin-right: 0.5rem;
+  max-width: 200px;
 }
 
 .station-name {
-  max-width: 250px;
   overflow: hidden;
+  width: 100%;
+  height: 1.2em; /* Constrain height */
 }
 
-.station-name.long-text {
-  animation: scroll-text 8s linear infinite;
-  animation-delay: 2s;
+.station-name .text-container {
+  width: 100%;
+  max-width: 180px;
+}
+
+.station-name .long-text {
+  animation: scroll-text 12s linear infinite;
+  animation-delay: 1s;
+  display: inline-block;
+  padding-left: 100%; /* Start from right side */
 }
 
 /* Pause scrolling on hover */
-.station-name.long-text:hover {
+.player-controls:hover .station-name .long-text {
   animation-play-state: paused;
 }
 
-/* Header player controls - fixed positioning */
+/* Header player controls - specific sizing */
 .header-player {
-  min-width: 280px;
-  max-width: 350px;
+  min-width: 320px;
+  max-width: 400px;
+  width: 380px;
+}
+
+/* Ensure text doesn't break layout */
+.station-name span {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+/* Better scrolling for shorter containers */
+@media (max-width: 768px) {
+  .player-controls {
+    min-width: 280px;
+    max-width: 320px;
+    width: 300px;
+  }
+  
+  .station-info {
+    max-width: 150px;
+  }
+  
+  .station-name .text-container {
+    max-width: 140px;
+  }
 }
 .favorite-button {
   position: absolute;
