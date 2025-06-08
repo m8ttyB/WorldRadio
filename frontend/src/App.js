@@ -74,27 +74,21 @@ function App() {
     const loadFavorites = () => {
       try {
         const savedFavorites = localStorage.getItem('globalRadioFavorites');
-        console.log('Loading favorites from localStorage:', savedFavorites);
         
         if (savedFavorites && savedFavorites !== 'undefined' && savedFavorites !== 'null') {
           const parsedFavorites = JSON.parse(savedFavorites);
-          console.log('Parsed favorites:', parsedFavorites);
           
           if (Array.isArray(parsedFavorites)) {
             setFavorites(parsedFavorites);
-            console.log('Favorites loaded successfully:', parsedFavorites.length, 'stations');
           } else {
-            console.warn('Invalid favorites format, resetting to empty array');
             setFavorites([]);
           }
         } else {
-          console.log('No saved favorites found, starting with empty array');
           setFavorites([]);
         }
       } catch (error) {
         console.error('Error loading favorites from localStorage:', error);
         setFavorites([]);
-        // Clear corrupted data
         localStorage.removeItem('globalRadioFavorites');
       } finally {
         setFavoritesLoaded(true);
