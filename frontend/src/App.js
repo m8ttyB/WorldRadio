@@ -12,6 +12,7 @@ function App() {
   const [countries, setCountries] = useState([]);
   const [selectedCountry, setSelectedCountry] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
+  const [activeFilter, setActiveFilter] = useState('all'); // 'all', 'favorites'
   const [error, setError] = useState('');
   const [favorites, setFavorites] = useState([]);
   const [favoritesLoaded, setFavoritesLoaded] = useState(false);
