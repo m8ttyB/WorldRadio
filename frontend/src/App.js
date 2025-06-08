@@ -313,17 +313,24 @@ function App() {
   };
 
   const toggleFavorite = (station) => {
+    console.log('toggleFavorite called with station:', station.name);
     setFavorites(prevFavorites => {
+      console.log('Current favorites before toggle:', prevFavorites.length);
       const isAlreadyFavorite = prevFavorites.some(fav => fav.stationuuid === station.stationuuid);
+      console.log('Is already favorite:', isAlreadyFavorite);
       
       if (isAlreadyFavorite) {
         // Remove from favorites
-        console.log('Removed from favorites:', station.name);
-        return prevFavorites.filter(fav => fav.stationuuid !== station.stationuuid);
+        console.log('Removing from favorites:', station.name);
+        const newFavorites = prevFavorites.filter(fav => fav.stationuuid !== station.stationuuid);
+        console.log('New favorites count after removal:', newFavorites.length);
+        return newFavorites;
       } else {
         // Add to favorites
-        console.log('Added to favorites:', station.name);
-        return [...prevFavorites, station];
+        console.log('Adding to favorites:', station.name);
+        const newFavorites = [...prevFavorites, station];
+        console.log('New favorites count after addition:', newFavorites.length);
+        return newFavorites;
       }
     });
   };
