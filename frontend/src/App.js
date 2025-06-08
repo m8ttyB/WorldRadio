@@ -103,20 +103,7 @@ function App() {
       const data = await response.json();
       
       if (Array.isArray(data)) {
-        // Add a test station with very long name to demonstrate scrolling
-        const testLongNameStation = {
-          stationuuid: "test-long-name-station",
-          name: "This Is An Extremely Long Radio Station Name That Should Definitely Trigger The Scrolling Text Animation Feature",
-          url: "https://mangoradio.stream.laut.fm/mangoradio",
-          url_resolved: "https://mangoradio.stream.laut.fm/mangoradio",
-          country: "Test Country",
-          tags: "demo,scrolling,test",
-          votes: 99999,
-          bitrate: 128,
-          codec: "MP3"
-        };
-        
-        setStations([testLongNameStation, ...data]);
+        setStations(data);
       } else {
         throw new Error('Invalid response format');
       }
