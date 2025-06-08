@@ -648,10 +648,14 @@ function App() {
         {/* Empty State */}
         {!loading && displayedStations.length === 0 && (
           <div className="text-center py-12">
-            <p className="text-gray-900 text-xl font-light">
+            <p className={`text-xl font-light transition-colors duration-300 ${
+              darkMode ? 'text-white' : 'text-gray-900'
+            }`}>
               {showFavorites ? 'No favorite stations yet' : 'No stations found'}
             </p>
-            <p className="text-gray-500 mt-2">
+            <p className={`mt-2 transition-colors duration-300 ${
+              darkMode ? 'text-gray-400' : 'text-gray-500'
+            }`}>
               {showFavorites 
                 ? 'Add stations to your favorites by clicking the ❤️ icon on any station card'
                 : 'Try adjusting your search criteria'
@@ -662,18 +666,14 @@ function App() {
       </div>
 
       {/* Footer */}
-      <footer className="border-t border-gray-200 bg-gray-50 mt-12">
+      <footer className={`border-t mt-12 transition-colors duration-300 ${
+        darkMode ? 'border-gray-700 bg-gray-800' : 'border-gray-200 bg-gray-50'
+      }`}>
         <div className="max-w-6xl mx-auto px-4 py-6 text-center">
-          <p className="text-gray-500 text-sm">
-            Powered by{' '}
-            <a 
-              href="https://www.radio-browser.info" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="text-black hover:underline"
-            >
-              Radio Browser
-            </a>
+          <p className={`text-sm transition-colors duration-300 ${
+            darkMode ? 'text-gray-400' : 'text-gray-500'
+          }`}>
+            Worldwide radio streaming
           </p>
         </div>
       </footer>
