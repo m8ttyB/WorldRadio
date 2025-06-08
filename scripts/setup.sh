@@ -9,8 +9,15 @@ echo "🚀 Setting up Global Radio for local development..."
 
 # Check if Node.js is installed
 if ! command -v node &> /dev/null; then
-    echo "❌ Node.js is not installed. Please install Node.js 18+ first."
-    echo "Visit: https://nodejs.org/"
+    echo "❌ Node.js is not installed. Please install Node.js 20+ first."
+    exit 1
+fi
+
+# Check Node.js version
+NODE_VERSION=$(node --version | cut -d'v' -f2 | cut -d'.' -f1)
+if [ "$NODE_VERSION" -lt 20 ]; then
+    echo "❌ Node.js version 20 or higher is required. Current version: $(node --version)"
+    echo "Please update Node.js to version 20 or higher."
     exit 1
 fi
 
