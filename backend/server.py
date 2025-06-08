@@ -10,7 +10,6 @@ from typing import List, Optional
 import uuid
 from datetime import datetime
 import httpx
-import asyncio
 
 
 # Configure logging
@@ -325,11 +324,6 @@ async def try_radio_api_request(endpoint: str, params: dict = None):
     logger.error("All Radio Browser API servers failed, returning comprehensive sample data")
     return get_sample_radio_data(endpoint)
 
-# MongoDB connection
-mongo_url = os.environ['MONGO_URL']
-client = AsyncIOMotorClient(mongo_url)
-db = client[os.environ['DB_NAME']]
-
 # Create the main app without a prefix
 app = FastAPI()
 
@@ -361,18 +355,6 @@ async def root():
 async def health_check():
     """Health check endpoint for Render.com"""
     return {"status": "healthy"}
-
-@api_router.post("/status", response_model=StatusCheck)
-async def create_status_check(input: StatusCheckCreate):
-    status_dict = input.dict()
-    status_obj = StatusCheck(**status_dict)
-    _ = await db.status_checks.insert_one(status_obj.dict())
-    return status_obj
-
-@api_router.get("/status", response_model=List[StatusCheck])
-async def get_status_checks():
-    status_checks = await db.status_checks.find().to_list(1000)
-    return [StatusCheck(**status_check) for status_check in status_checks]
 
 @api_router.get("/test")
 async def test_route():
@@ -489,6 +471,3 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-@app.on_event("shutdown")
-async def shutdown_db_client():
-    client.close()

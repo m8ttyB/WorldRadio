@@ -343,8 +343,6 @@ function App() {
     performSearch(searchTerm, value);
   };
 
-
-
   const showFavoriteStations = () => {
     setShowFavorites(true);
     setStations(favorites);
@@ -377,8 +375,8 @@ function App() {
           : 'border-gray-200 bg-white'
       }`}>
         <div className="max-w-6xl mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
+          <div className="header-content">
+            <div className="header-left">
               <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors duration-300 ${
                 darkMode ? 'bg-white' : 'bg-black'
               }`}>
@@ -394,7 +392,7 @@ function App() {
               </div>
             </div>
 
-            <div className="flex items-center space-x-4">
+            <div className="header-right">
               {/* Dark Mode Toggle */}
               <button
                 onClick={toggleDarkMode}
@@ -408,7 +406,7 @@ function App() {
                 {darkMode ? '☀️' : '🌙'}
               </button>
 
-              {/* Floating Current Playing - Fixed Width with Scrolling */}
+              {/* Floating Current Playing */}
               {currentStation && (
                 <div className={`flex items-center space-x-3 rounded-lg px-3 py-2 shadow-md player-controls transition-colors duration-300 ${
                   darkMode ? 'bg-gray-800 text-white' : 'bg-black text-white'
@@ -457,7 +455,7 @@ function App() {
                 </div>
               )}
             </div>
-            </div>
+          </div>
         </div>
       </header>
 
@@ -605,50 +603,50 @@ function App() {
             <p className="text-gray-600 mt-4">Loading stations...</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid">
             {filteredStations.map((station) => (
               <div
                 key={station.stationuuid}
-                className={`border rounded-lg p-4 hover:shadow-md transition-all cursor-pointer ${
+                className={`station-card border rounded-lg p-4 hover:shadow-md transition-all cursor-pointer ${
                   currentStation && currentStation.stationuuid === station.stationuuid
                     ? 'border-black bg-gray-50'
                     : 'border-gray-200 hover:border-gray-300'
                 }`}
                 onClick={() => playStation(station)}
               >
-                <div className="flex items-start justify-between mb-3">
-                  <div className="flex-1 min-w-0">
+                <div className="controls">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleFavorite(station);
+                    }}
+                    className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${
+                      isFavorite(station)
+                        ? 'text-red-500 hover:text-red-600'
+                        : 'text-gray-400 hover:text-red-500'
+                    }`}
+                    title={isFavorite(station) ? 'Remove from favorites' : 'Add to favorites'}
+                  >
+                    {isFavorite(station) ? '❤️' : '🤍'}
+                  </button>
+                  <button className="text-xl text-gray-400 hover:text-black transition-colors">
+                    {currentStation && currentStation.stationuuid === station.stationuuid && isPlaying ? '⏸' : '▶'}
+                  </button>
+                </div>
+                <div className="content">
+                  <div className="mb-3">
                     <h3 className="font-medium text-gray-900 truncate">{station.name}</h3>
                     <p className="text-gray-600 text-sm">{station.country}</p>
                   </div>
-                  <div className="flex items-center space-x-2 ml-3">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        toggleFavorite(station);
-                      }}
-                      className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${
-                        isFavorite(station)
-                          ? 'text-red-500 hover:text-red-600'
-                          : 'text-gray-400 hover:text-red-500'
-                      }`}
-                      title={isFavorite(station) ? 'Remove from favorites' : 'Add to favorites'}
-                    >
-                      {isFavorite(station) ? '❤️' : '🤍'}
-                    </button>
-                    <button className="text-xl text-gray-400 hover:text-black transition-colors">
-                      {currentStation && currentStation.stationuuid === station.stationuuid && isPlaying ? '⏸' : '▶'}
-                    </button>
+                  
+                  {station.tags && (
+                    <p className="text-gray-500 text-xs mb-2 truncate">{station.tags}</p>
+                  )}
+                  
+                  <div className="flex justify-between items-center text-xs text-gray-400">
+                    <span>{station.votes || 0} votes</span>
+                    {station.bitrate && <span>{station.bitrate} kbps</span>}
                   </div>
-                </div>
-                
-                {station.tags && (
-                  <p className="text-gray-500 text-xs mb-2 truncate">{station.tags}</p>
-                )}
-                
-                <div className="flex justify-between items-center text-xs text-gray-400">
-                  <span>{station.votes || 0} votes</span>
-                  {station.bitrate && <span>{station.bitrate} kbps</span>}
                 </div>
               </div>
             ))}
