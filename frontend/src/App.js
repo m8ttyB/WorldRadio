@@ -29,21 +29,7 @@ function App() {
   });
   const audioRef = useRef(null);
 
-  // Load dark mode preference from localStorage
-  useEffect(() => {
-    try {
-      const savedDarkMode = localStorage.getItem('globalRadioDarkMode');
-      if (savedDarkMode !== null) {
-        const isDark = JSON.parse(savedDarkMode);
-        setDarkMode(isDark);
-        console.log('Dark mode loaded from localStorage:', isDark);
-      }
-    } catch (error) {
-      console.error('Error loading dark mode preference:', error);
-    }
-  }, []);
-
-  // Save dark mode preference and apply to document
+  // Apply dark mode class on initial load and changes
   useEffect(() => {
     try {
       localStorage.setItem('globalRadioDarkMode', JSON.stringify(darkMode));
