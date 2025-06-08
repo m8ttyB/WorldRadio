@@ -22,20 +22,34 @@ function App() {
 
   // Load dark mode preference from localStorage
   useEffect(() => {
-    const savedDarkMode = localStorage.getItem('globalRadioDarkMode');
-    if (savedDarkMode !== null) {
-      setDarkMode(JSON.parse(savedDarkMode));
+    try {
+      const savedDarkMode = localStorage.getItem('globalRadioDarkMode');
+      if (savedDarkMode !== null) {
+        const isDark = JSON.parse(savedDarkMode);
+        setDarkMode(isDark);
+        console.log('Dark mode loaded from localStorage:', isDark);
+      }
+    } catch (error) {
+      console.error('Error loading dark mode preference:', error);
     }
   }, []);
 
-  // Save dark mode preference to localStorage
+  // Save dark mode preference and apply to document
   useEffect(() => {
-    localStorage.setItem('globalRadioDarkMode', JSON.stringify(darkMode));
-    // Apply dark mode class to document
-    if (darkMode) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
+    try {
+      localStorage.setItem('globalRadioDarkMode', JSON.stringify(darkMode));
+      console.log('Dark mode saved to localStorage:', darkMode);
+      
+      // Apply dark mode class to document
+      if (darkMode) {
+        document.documentElement.classList.add('dark');
+        document.body.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+        document.body.classList.remove('dark');
+      }
+    } catch (error) {
+      console.error('Error saving dark mode preference:', error);
     }
   }, [darkMode]);
 
