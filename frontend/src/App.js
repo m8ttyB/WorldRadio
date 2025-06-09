@@ -476,32 +476,41 @@ function App() {
                 fetchPopularStations();
               }}
               className={`px-4 py-2 rounded-lg font-medium transition-colors duration-300 ${
-                !showFavorites && !isFilterOpen
+                !showFavorites && !isFilterOpen && !searchTerm && !selectedCountry
                   ? darkMode ? 'bg-white text-black' : 'bg-black text-white'
                   : darkMode ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
               }`}
             >
-              All Stations
+              <span className="hidden sm:inline">All Stations</span>
+              <span className="sm:hidden">📻 All</span>
             </button>
             <button
               className={`px-4 py-2 rounded-lg font-medium transition-colors duration-300 ${
-                isFilterOpen
+                isFilterOpen || searchTerm || selectedCountry
                   ? darkMode ? 'bg-white text-black' : 'bg-black text-white'
                   : darkMode ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
               }`}
-              onClick={() => setIsFilterOpen(!isFilterOpen)}
+              onClick={() => {
+                setIsFilterOpen(!isFilterOpen);
+                if (!isFilterOpen) {
+                  setShowFavorites(false);
+                  fetchPopularStations();
+                }
+              }}
             >
-              🔍 Filters {searchTerm || selectedCountry ? '(Active)' : ''}
+              <span className="hidden sm:inline">🔍 Filters {searchTerm || selectedCountry ? '(Active)' : ''}</span>
+              <span className="sm:hidden">🔍</span>
             </button>
             <button
               onClick={showFavoriteStations}
               className={`px-4 py-2 rounded-lg font-medium transition-colors duration-300 ${
-                showFavorites && !isFilterOpen
+                showFavorites && !isFilterOpen && !searchTerm && !selectedCountry
                   ? darkMode ? 'bg-white text-black' : 'bg-black text-white'
                   : darkMode ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
               }`}
             >
-              ❤️ Favorites ({favorites.length})
+              <span className="hidden sm:inline">❤️ Favorites ({favorites.length})</span>
+              <span className="sm:hidden">❤️ ({favorites.length})</span>
             </button>
           </div>
         </div>
@@ -542,7 +551,13 @@ function App() {
               <div className="flex justify-end space-x-2">
                 <button
                   type="button"
-                  onClick={() => setIsFilterOpen(false)}
+                  onClick={() => {
+                    setIsFilterOpen(false);
+                    if (showFavorites) {
+                      setShowFavorites(false);
+                      fetchPopularStations();
+                    }
+                  }}
                   className={`search-button px-6 py-3 border rounded-lg font-medium transition-colors duration-300 ${
                     darkMode 
                       ? 'border-gray-600 text-gray-300 hover:bg-gray-700' 
