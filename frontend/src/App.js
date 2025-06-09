@@ -546,7 +546,7 @@ function App() {
                     <button
                       type="button"
                       onClick={() => setIsFilterOpen(false)}
-                      className={`px-6 py-3 border rounded-lg font-medium transition-colors duration-300 ${
+                      className={`search-button px-6 py-3 border rounded-lg font-medium transition-colors duration-300 ${
                         darkMode 
                           ? 'border-gray-600 text-gray-300 hover:bg-gray-700' 
                           : 'border-gray-300 text-gray-700 hover:bg-gray-50'

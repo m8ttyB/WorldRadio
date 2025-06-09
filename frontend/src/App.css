@@ -712,6 +712,11 @@ select {
   gap: 0.5rem;
 }
 
+/* Hide search button on desktop */
+.search-button {
+  display: block;
+}
+
 @media (min-width: 768px) {
   .filter-toggle {
     display: none;
@@ -725,5 +730,9 @@ select {
   .filter-grid {
     grid-template-columns: 1fr 1fr auto;
     gap: 1rem;
+  }
+
+  .search-button {
+    display: none;
   }
 }
