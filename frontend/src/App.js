@@ -29,6 +29,7 @@ function App() {
     }
   });
   const audioRef = useRef(null);
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
 
   // Apply dark mode class on initial load and changes
   useEffect(() => {
@@ -496,79 +497,95 @@ function App() {
           <div className={`rounded-lg p-6 mb-6 transition-colors duration-300 ${
             darkMode ? 'bg-gray-800' : 'bg-gray-50'
           }`}>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-              <input
-                type="text"
-                placeholder="Search stations..."
-                value={searchTerm}
-                onChange={(e) => handleSearchChange(e.target.value)}
-                className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent transition-colors duration-300 ${
-                  darkMode 
-                    ? 'border-gray-600 bg-gray-700 text-white placeholder-gray-400' 
-                    : 'border-gray-300 bg-white text-black placeholder-gray-500'
-                }`}
-              />
-              
-              <select
-                value={selectedCountry}
-                onChange={(e) => handleCountryChange(e.target.value)}
-                className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent transition-colors duration-300 ${
-                  darkMode 
-                    ? 'border-gray-600 bg-gray-700 text-white' 
-                    : 'border-gray-300 bg-white text-black'
-                }`}
+            <div className="filter-section">
+              <button
+                className="filter-toggle"
+                onClick={() => setIsFilterOpen(!isFilterOpen)}
               >
-                <option value="">All Countries</option>
-                {countries.map((country) => (
-                  <option key={country.name} value={country.name}>
-                    {country.name} ({country.stationcount})
-                  </option>
-                ))}
-              </select>
+                <span className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                  Filters {searchTerm || selectedCountry ? '(Active)' : ''}
+                </span>
+                <span className={`transform transition-transform duration-300 ${isFilterOpen ? 'rotate-180' : ''}`}>
+                  ▼
+                </span>
+              </button>
+              
+              <div className={`filter-content ${isFilterOpen ? 'open' : ''}`}>
+                <div className="filter-grid">
+                  <input
+                    type="text"
+                    placeholder="Search stations..."
+                    value={searchTerm}
+                    onChange={(e) => handleSearchChange(e.target.value)}
+                    className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent transition-colors duration-300 ${
+                      darkMode 
+                        ? 'border-gray-600 bg-gray-700 text-white placeholder-gray-400' 
+                        : 'border-gray-300 bg-white text-black placeholder-gray-500'
+                    }`}
+                  />
+                  
+                  <select
+                    value={selectedCountry}
+                    onChange={(e) => handleCountryChange(e.target.value)}
+                    className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent transition-colors duration-300 ${
+                      darkMode 
+                        ? 'border-gray-600 bg-gray-700 text-white' 
+                        : 'border-gray-300 bg-white text-black'
+                    }`}
+                  >
+                    <option value="">All Countries</option>
+                    {countries.map((country) => (
+                      <option key={country.name} value={country.name}>
+                        {country.name} ({country.stationcount})
+                      </option>
+                    ))}
+                  </select>
 
-              <div className="flex justify-end">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSearchTerm('');
-                    setSelectedCountry('');
-                    fetchPopularStations();
-                  }}
-                  className={`px-6 py-3 border rounded-lg font-medium transition-colors duration-300 ${
+                  <div className="flex justify-end">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSearchTerm('');
+                        setSelectedCountry('');
+                        fetchPopularStations();
+                      }}
+                      className={`px-6 py-3 border rounded-lg font-medium transition-colors duration-300 ${
+                        darkMode 
+                          ? 'border-gray-600 text-gray-300 hover:bg-gray-700' 
+                          : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+                      }`}
+                    >
+                      Clear Filters
+                    </button>
+                  </div>
+                </div>
+
+                {error && (
+                  <div className={`border px-4 py-3 rounded-lg mt-4 transition-colors duration-300 ${
                     darkMode 
-                      ? 'border-gray-600 text-gray-300 hover:bg-gray-700' 
-                      : 'border-gray-300 text-gray-700 hover:bg-gray-50'
-                  }`}
-                >
-                  Clear Filters
-                </button>
+                      ? 'bg-red-900 border-red-700 text-red-200' 
+                      : 'bg-red-50 border-red-200 text-red-700'
+                  }`}>
+                    {error}
+                  </div>
+                )}
+
+                {/* Real-time search indicator */}
+                {(searchTerm || selectedCountry) && !loading && (
+                  <div className={`text-sm mt-4 transition-colors duration-300 ${
+                    darkMode ? 'text-gray-400' : 'text-gray-600'
+                  }`}>
+                    {searchTerm && selectedCountry 
+                      ? `Filtering by "${searchTerm}" in ${selectedCountry}`
+                      : searchTerm 
+                        ? `Searching for "${searchTerm}"`
+                        : `Showing stations from ${selectedCountry}`
+                    }
+                    {stations.length > 0 && ` • ${stations.length} station${stations.length !== 1 ? 's' : ''} found`}
+                  </div>
+                )}
               </div>
             </div>
-
-            {error && (
-              <div className={`border px-4 py-3 rounded-lg transition-colors duration-300 ${
-                darkMode 
-                  ? 'bg-red-900 border-red-700 text-red-200' 
-                  : 'bg-red-50 border-red-200 text-red-700'
-              }`}>
-                {error}
-              </div>
-            )}
-
-            {/* Real-time search indicator */}
-            {(searchTerm || selectedCountry) && !loading && (
-              <div className={`text-sm mt-2 transition-colors duration-300 ${
-                darkMode ? 'text-gray-400' : 'text-gray-600'
-              }`}>
-                {searchTerm && selectedCountry 
-                  ? `Filtering by "${searchTerm}" in ${selectedCountry}`
-                  : searchTerm 
-                    ? `Searching for "${searchTerm}"`
-                    : `Showing stations from ${selectedCountry}`
-                }
-                {stations.length > 0 && ` • ${stations.length} station${stations.length !== 1 ? 's' : ''} found`}
-              </div>
-            )}
           </div>
         )}
 
