@@ -376,19 +376,21 @@ function App() {
 
   const handleFilterClick = () => {
     setIsFilterOpen(!isFilterOpen);
+    // Always clear favorites view and set to all stations
+    setShowFavorites(false);
+    setActiveFilter('all');
+    
     if (!isFilterOpen) {
-      // When opening filter, clear favorites view
-      setShowFavorites(false);
-      setActiveFilter('all');
-      // Restore saved search values
+      // When opening filter, restore saved search values
       setSearchTerm(savedSearchTerm);
       setSelectedCountry(savedSelectedCountry);
-      // Always re-run the search with saved values
-      if (savedSearchTerm || savedSelectedCountry) {
-        handleSearch();
-      } else {
-        fetchPopularStations();
-      }
+    }
+    
+    // Always rerun the search with saved values
+    if (savedSearchTerm || savedSelectedCountry) {
+      handleSearch();
+    } else {
+      fetchPopularStations();
     }
   };
 
