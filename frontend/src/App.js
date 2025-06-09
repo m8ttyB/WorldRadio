@@ -12,6 +12,7 @@ function App() {
   const [countries, setCountries] = useState([]);
   const [selectedCountry, setSelectedCountry] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
+  const [savedSearchTerm, setSavedSearchTerm] = useState('');
   const [activeFilter, setActiveFilter] = useState('all'); // 'all', 'favorites'
   const [error, setError] = useState('');
   const [favorites, setFavorites] = useState([]);
@@ -30,6 +31,7 @@ function App() {
   });
   const audioRef = useRef(null);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [savedSelectedCountry, setSavedSelectedCountry] = useState('');
 
   // Apply dark mode class on initial load and changes
   useEffect(() => {
@@ -360,6 +362,44 @@ function App() {
 
   const displayedStations = showFavorites ? favorites : stations;
 
+  const handleAllStationsClick = () => {
+    // Save current search values before clearing
+    setSavedSearchTerm(searchTerm);
+    setSavedSelectedCountry(selectedCountry);
+    
+    setShowFavorites(false);
+    setActiveFilter('all');
+    setIsFilterOpen(false);
+    // Don't clear search values, just fetch popular stations
+    fetchPopularStations();
+  };
+
+  const handleFilterClick = () => {
+    setIsFilterOpen(!isFilterOpen);
+    if (!isFilterOpen) {
+      // When opening filter, clear favorites view
+      setShowFavorites(false);
+      setActiveFilter('all');
+      // Restore saved search values
+      setSearchTerm(savedSearchTerm);
+      setSelectedCountry(savedSelectedCountry);
+      // Always re-run the search with saved values
+      if (savedSearchTerm || savedSelectedCountry) {
+        handleSearch();
+      } else {
+        fetchPopularStations();
+      }
+    }
+  };
+
+  const handleClearFilters = () => {
+    setSearchTerm('');
+    setSelectedCountry('');
+    setSavedSearchTerm('');
+    setSavedSelectedCountry('');
+    fetchPopularStations();
+  };
+
   return (
     <div className={`min-h-screen transition-colors duration-300 ${darkMode ? 'bg-gray-900' : 'bg-white'}`}>
       <audio 
@@ -468,13 +508,7 @@ function App() {
         <div className="flex items-center justify-between mb-6">
           <div className="flex space-x-4">
             <button
-              onClick={() => {
-                setShowFavorites(false);
-                setIsFilterOpen(false);
-                setSearchTerm('');
-                setSelectedCountry('');
-                fetchPopularStations();
-              }}
+              onClick={handleAllStationsClick}
               className={`px-4 py-2 rounded-lg font-medium transition-colors duration-300 ${
                 !showFavorites && !isFilterOpen && !searchTerm && !selectedCountry
                   ? darkMode ? 'bg-white text-black' : 'bg-black text-white'
@@ -490,13 +524,7 @@ function App() {
                   ? darkMode ? 'bg-white text-black' : 'bg-black text-white'
                   : darkMode ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
               }`}
-              onClick={() => {
-                setIsFilterOpen(!isFilterOpen);
-                if (!isFilterOpen) {
-                  setShowFavorites(false);
-                  fetchPopularStations();
-                }
-              }}
+              onClick={handleFilterClick}
             >
               <span className="hidden sm:inline">🔍 Filters {searchTerm || selectedCountry ? '(Active)' : ''}</span>
               <span className="sm:hidden">🔍</span>
@@ -568,11 +596,7 @@ function App() {
                 </button>
                 <button
                   type="button"
-                  onClick={() => {
-                    setSearchTerm('');
-                    setSelectedCountry('');
-                    fetchPopularStations();
-                  }}
+                  onClick={handleClearFilters}
                   className={`px-6 py-3 border rounded-lg font-medium transition-colors duration-300 ${
                     darkMode 
                       ? 'border-gray-600 text-gray-300 hover:bg-gray-700' 
@@ -706,25 +730,6 @@ function App() {
                 <p className="text-gray-500 mt-2">Try adjusting your search criteria</p>
               </>
             )}
-          </div>
-        )}
-
-        {/* Empty State */}
-        {!loading && displayedStations.length === 0 && (
-          <div className="text-center py-12">
-            <p className={`text-xl font-light transition-colors duration-300 ${
-              darkMode ? 'text-white' : 'text-gray-900'
-            }`}>
-              {showFavorites ? 'No favorite stations yet' : 'No stations found'}
-            </p>
-            <p className={`mt-2 transition-colors duration-300 ${
-              darkMode ? 'text-gray-400' : 'text-gray-500'
-            }`}>
-              {showFavorites 
-                ? 'Add stations to your favorites by clicking the ❤️ icon on any station card'
-                : 'Try adjusting your search criteria'
-              }
-            </p>
           </div>
         )}
       </div>
