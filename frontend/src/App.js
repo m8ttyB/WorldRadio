@@ -468,9 +468,10 @@ function App() {
             <button
               onClick={() => {
                 setShowFavorites(false);
-                if (stations.length === 0 || showFavorites) {
-                  fetchPopularStations();
-                }
+                setIsFilterOpen(false);
+                setSearchTerm('');
+                setSelectedCountry('');
+                fetchPopularStations();
               }}
               className={`px-4 py-2 rounded-lg font-medium transition-colors duration-300 ${
                 !showFavorites 
@@ -541,7 +542,18 @@ function App() {
                     ))}
                   </select>
 
-                  <div className="flex justify-end">
+                  <div className="flex justify-end space-x-2">
+                    <button
+                      type="button"
+                      onClick={() => setIsFilterOpen(false)}
+                      className={`px-6 py-3 border rounded-lg font-medium transition-colors duration-300 ${
+                        darkMode 
+                          ? 'border-gray-600 text-gray-300 hover:bg-gray-700' 
+                          : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+                      }`}
+                    >
+                      Search
+                    </button>
                     <button
                       type="button"
                       onClick={() => {
