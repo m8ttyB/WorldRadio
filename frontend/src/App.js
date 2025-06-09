@@ -510,9 +510,13 @@ function App() {
             <button
               onClick={handleAllStationsClick}
               className={`px-4 py-2 rounded-lg font-medium transition-colors duration-300 ${
-                !showFavorites && !isFilterOpen && !searchTerm && !selectedCountry
-                  ? darkMode ? 'bg-white text-black' : 'bg-black text-white'
-                  : darkMode ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                !showFavorites && !isFilterOpen
+                  ? darkMode 
+                    ? 'bg-gray-800 text-white' 
+                    : 'bg-black text-white'
+                  : darkMode 
+                    ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' 
+                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
               }`}
             >
               <span className="hidden sm:inline">All Stations</span>
@@ -520,9 +524,13 @@ function App() {
             </button>
             <button
               className={`px-4 py-2 rounded-lg font-medium transition-colors duration-300 ${
-                isFilterOpen || searchTerm || selectedCountry
-                  ? darkMode ? 'bg-white text-black' : 'bg-black text-white'
-                  : darkMode ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                isFilterOpen
+                  ? darkMode 
+                    ? 'bg-gray-800 text-white' 
+                    : 'bg-black text-white'
+                  : darkMode 
+                    ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' 
+                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
               }`}
               onClick={handleFilterClick}
             >
