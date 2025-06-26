@@ -10,7 +10,7 @@ services:
     runtime:         docker
     rootDir:         .                   # context for the Dockerfile
     dockerfilePath:  Dockerfile.backend
-    plan:            starter                # free • starter • standard • pro
+    plan:            free                # free • starter • standard • pro
     healthCheckPath: /healthz            # root-level health check endpoint
     # scaling:
     #   minInstances: 1
@@ -29,7 +29,7 @@ services:
     runtime:         docker
     rootDir:         .
     dockerfilePath:  Dockerfile.frontend
-    plan:            starter
+    plan:            free
     buildFilter:
       paths:
         - frontend/**
