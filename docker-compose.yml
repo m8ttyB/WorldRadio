@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   backend:
     build:
@@ -7,11 +5,7 @@ services:
       dockerfile: Dockerfile.backend
     ports:
       - "8001:8001"
-    environment:
-      - MONGO_URL=mongodb://mongodb:27017
-      - DB_NAME=global_radio
-    depends_on:
-      - mongodb
+    environment: []
     volumes:
       - ./backend:/app
     restart: unless-stopped
@@ -36,19 +30,6 @@ services:
     restart: unless-stopped
     networks:
       - global-radio-network
-
-  mongodb:
-    image: mongo:latest
-    ports:
-      - "27017:27017"
-    volumes:
-      - mongodb_data:/data/db
-    restart: unless-stopped
-    networks:
-      - global-radio-network
-
-volumes:
-  mongodb_data:
 
 networks:
   global-radio-network:

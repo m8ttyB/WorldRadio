@@ -3,21 +3,8 @@
 # ============================================================
 services:
   # ----------------------------------------------------------
-  # MongoDB • private service (pserv) + disk
+  # MongoDB removed - application uses external Radio Browser API
   # ----------------------------------------------------------
-  - type:            pserv               # private service ➜ internal network only
-    name:            mongodb
-    runtime:         docker
-    dockerfilePath:  Dockerfile.mongodb
-    plan:            starter             # change to 'pro' if you need bigger CPU/RAM
-    region:          oregon              # or frankfurt / ohio / singapore
-    disk:
-      name:          mongodb-data
-      mountPath:     /data/db
-      sizeGB:        2                   # pick a size that fits your data
-    envVars:
-      - key:   MONGO_INITDB_DATABASE
-        value: global_radio
 
   # ----------------------------------------------------------
   # FastAPI / Django / Flask backend
@@ -34,12 +21,9 @@ services:
     #   maxInstances: 3
     #   targetCPUPercent: 80
     envVars:
-      # direct literals
-      - key:   DB_NAME
-        value: global_radio
-      # point to Mongo running above (internal address is the service name)
-      - key:   MONGO_URL
-        value: mongodb://mongodb:27017
+      # Environment variables for backend service
+      - key:   DEBUG
+        value: false
 
   # ----------------------------------------------------------
   # React front-end (served by nginx in your Dockerfile)

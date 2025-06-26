@@ -12,6 +12,7 @@ function App() {
   const [countries, setCountries] = useState([]);
   const [selectedCountry, setSelectedCountry] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
+  const [savedSearchTerm, setSavedSearchTerm] = useState('');
   const [activeFilter, setActiveFilter] = useState('all'); // 'all', 'favorites'
   const [error, setError] = useState('');
   const [favorites, setFavorites] = useState([]);
@@ -29,6 +30,8 @@ function App() {
     }
   });
   const audioRef = useRef(null);
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [savedSelectedCountry, setSavedSelectedCountry] = useState('');
 
   // Apply dark mode class on initial load and changes
   useEffect(() => {
@@ -343,12 +346,12 @@ function App() {
     performSearch(searchTerm, value);
   };
 
-
-
   const showFavoriteStations = () => {
     setShowFavorites(true);
+    setIsFilterOpen(false);
+    setSearchTerm('');
+    setSelectedCountry('');
     setStations(favorites);
-    setLoading(false);
   };
 
   const clearAllFavorites = () => {
@@ -358,6 +361,46 @@ function App() {
   };
 
   const displayedStations = showFavorites ? favorites : stations;
+
+  const handleAllStationsClick = () => {
+    // Save current search values before clearing
+    setSavedSearchTerm(searchTerm);
+    setSavedSelectedCountry(selectedCountry);
+    
+    setShowFavorites(false);
+    setActiveFilter('all');
+    setIsFilterOpen(false);
+    // Don't clear search values, just fetch popular stations
+    fetchPopularStations();
+  };
+
+  const handleFilterClick = () => {
+    setIsFilterOpen(!isFilterOpen);
+    // Always clear favorites view and set to all stations
+    setShowFavorites(false);
+    setActiveFilter('all');
+    
+    if (!isFilterOpen) {
+      // When opening filter, restore saved search values
+      setSearchTerm(savedSearchTerm);
+      setSelectedCountry(savedSelectedCountry);
+    }
+    
+    // Always rerun the search with saved values
+    if (savedSearchTerm || savedSelectedCountry) {
+      handleSearch();
+    } else {
+      fetchPopularStations();
+    }
+  };
+
+  const handleClearFilters = () => {
+    setSearchTerm('');
+    setSelectedCountry('');
+    setSavedSearchTerm('');
+    setSavedSelectedCountry('');
+    fetchPopularStations();
+  };
 
   return (
     <div className={`min-h-screen transition-colors duration-300 ${darkMode ? 'bg-gray-900' : 'bg-white'}`}>
@@ -377,8 +420,8 @@ function App() {
           : 'border-gray-200 bg-white'
       }`}>
         <div className="max-w-6xl mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
+          <div className="header-content">
+            <div className="header-left">
               <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors duration-300 ${
                 darkMode ? 'bg-white' : 'bg-black'
               }`}>
@@ -394,7 +437,7 @@ function App() {
               </div>
             </div>
 
-            <div className="flex items-center space-x-4">
+            <div className="header-right">
               {/* Dark Mode Toggle */}
               <button
                 onClick={toggleDarkMode}
@@ -408,7 +451,7 @@ function App() {
                 {darkMode ? '☀️' : '🌙'}
               </button>
 
-              {/* Floating Current Playing - Fixed Width with Scrolling */}
+              {/* Floating Current Playing */}
               {currentStation && (
                 <div className={`flex items-center space-x-3 rounded-lg px-3 py-2 shadow-md player-controls transition-colors duration-300 ${
                   darkMode ? 'bg-gray-800 text-white' : 'bg-black text-white'
@@ -457,7 +500,7 @@ function App() {
                 </div>
               )}
             </div>
-            </div>
+          </div>
         </div>
       </header>
 
@@ -467,38 +510,53 @@ function App() {
         <div className="flex items-center justify-between mb-6">
           <div className="flex space-x-4">
             <button
-              onClick={() => {
-                setShowFavorites(false);
-                if (stations.length === 0 || showFavorites) {
-                  fetchPopularStations();
-                }
-              }}
+              onClick={handleAllStationsClick}
               className={`px-4 py-2 rounded-lg font-medium transition-colors duration-300 ${
-                !showFavorites 
-                  ? darkMode ? 'bg-white text-black' : 'bg-black text-white'
-                  : darkMode ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                !showFavorites && !isFilterOpen
+                  ? darkMode 
+                    ? 'bg-gray-800 text-white' 
+                    : 'bg-black text-white'
+                  : darkMode 
+                    ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' 
+                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
               }`}
             >
-              All Stations
+              <span className="hidden sm:inline">All Stations</span>
+              <span className="sm:hidden">📻 All</span>
+            </button>
+            <button
+              className={`px-4 py-2 rounded-lg font-medium transition-colors duration-300 ${
+                isFilterOpen
+                  ? darkMode 
+                    ? 'bg-gray-800 text-white' 
+                    : 'bg-black text-white'
+                  : darkMode 
+                    ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' 
+                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+              }`}
+              onClick={handleFilterClick}
+            >
+              <span className="hidden sm:inline">🔍 Filters {searchTerm || selectedCountry ? '(Active)' : ''}</span>
+              <span className="sm:hidden">🔍</span>
             </button>
             <button
               onClick={showFavoriteStations}
               className={`px-4 py-2 rounded-lg font-medium transition-colors duration-300 ${
-                showFavorites 
+                showFavorites && !isFilterOpen && !searchTerm && !selectedCountry
                   ? darkMode ? 'bg-white text-black' : 'bg-black text-white'
                   : darkMode ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
               }`}
             >
-              ❤️ Favorites ({favorites.length})
+              <span className="hidden sm:inline">❤️ Favorites ({favorites.length})</span>
+              <span className="sm:hidden">❤️ ({favorites.length})</span>
             </button>
           </div>
         </div>
 
-        {!showFavorites && (
-          <div className={`rounded-lg p-6 mb-6 transition-colors duration-300 ${
-            darkMode ? 'bg-gray-800' : 'bg-gray-50'
-          }`}>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+        {/* Search Filter Section */}
+        <div className="filter-section">
+          <div className={`filter-content ${isFilterOpen ? 'open' : ''}`}>
+            <div className="filter-grid">
               <input
                 type="text"
                 placeholder="Search stations..."
@@ -528,14 +586,27 @@ function App() {
                 ))}
               </select>
 
-              <div className="flex justify-end">
+              <div className="flex justify-end space-x-2">
                 <button
                   type="button"
                   onClick={() => {
-                    setSearchTerm('');
-                    setSelectedCountry('');
-                    fetchPopularStations();
+                    setIsFilterOpen(false);
+                    if (showFavorites) {
+                      setShowFavorites(false);
+                      fetchPopularStations();
+                    }
                   }}
+                  className={`search-button px-6 py-3 border rounded-lg font-medium transition-colors duration-300 ${
+                    darkMode 
+                      ? 'border-gray-600 text-gray-300 hover:bg-gray-700' 
+                      : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+                  }`}
+                >
+                  Search
+                </button>
+                <button
+                  type="button"
+                  onClick={handleClearFilters}
                   className={`px-6 py-3 border rounded-lg font-medium transition-colors duration-300 ${
                     darkMode 
                       ? 'border-gray-600 text-gray-300 hover:bg-gray-700' 
@@ -548,7 +619,7 @@ function App() {
             </div>
 
             {error && (
-              <div className={`border px-4 py-3 rounded-lg transition-colors duration-300 ${
+              <div className={`border px-4 py-3 rounded-lg mt-4 transition-colors duration-300 ${
                 darkMode 
                   ? 'bg-red-900 border-red-700 text-red-200' 
                   : 'bg-red-50 border-red-200 text-red-700'
@@ -559,7 +630,7 @@ function App() {
 
             {/* Real-time search indicator */}
             {(searchTerm || selectedCountry) && !loading && (
-              <div className={`text-sm mt-2 transition-colors duration-300 ${
+              <div className={`text-sm mt-4 transition-colors duration-300 ${
                 darkMode ? 'text-gray-400' : 'text-gray-600'
               }`}>
                 {searchTerm && selectedCountry 
@@ -572,7 +643,7 @@ function App() {
               </div>
             )}
           </div>
-        )}
+        </div>
 
         {showFavorites && (
           <div className={`border rounded-lg p-6 mb-6 transition-colors duration-300 ${
@@ -605,50 +676,50 @@ function App() {
             <p className="text-gray-600 mt-4">Loading stations...</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid">
             {filteredStations.map((station) => (
               <div
                 key={station.stationuuid}
-                className={`border rounded-lg p-4 hover:shadow-md transition-all cursor-pointer ${
+                className={`station-card border rounded-lg p-4 hover:shadow-md transition-all cursor-pointer ${
                   currentStation && currentStation.stationuuid === station.stationuuid
                     ? 'border-black bg-gray-50'
                     : 'border-gray-200 hover:border-gray-300'
                 }`}
                 onClick={() => playStation(station)}
               >
-                <div className="flex items-start justify-between mb-3">
-                  <div className="flex-1 min-w-0">
+                <div className="controls">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleFavorite(station);
+                    }}
+                    className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${
+                      isFavorite(station)
+                        ? 'text-red-500 hover:text-red-600'
+                        : 'text-gray-400 hover:text-red-500'
+                    }`}
+                    title={isFavorite(station) ? 'Remove from favorites' : 'Add to favorites'}
+                  >
+                    {isFavorite(station) ? '❤️' : '🤍'}
+                  </button>
+                  <button className="text-xl text-gray-400 hover:text-black transition-colors">
+                    {currentStation && currentStation.stationuuid === station.stationuuid && isPlaying ? '⏸' : '▶'}
+                  </button>
+                </div>
+                <div className="content">
+                  <div className="mb-3">
                     <h3 className="font-medium text-gray-900 truncate">{station.name}</h3>
                     <p className="text-gray-600 text-sm">{station.country}</p>
                   </div>
-                  <div className="flex items-center space-x-2 ml-3">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        toggleFavorite(station);
-                      }}
-                      className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${
-                        isFavorite(station)
-                          ? 'text-red-500 hover:text-red-600'
-                          : 'text-gray-400 hover:text-red-500'
-                      }`}
-                      title={isFavorite(station) ? 'Remove from favorites' : 'Add to favorites'}
-                    >
-                      {isFavorite(station) ? '❤️' : '🤍'}
-                    </button>
-                    <button className="text-xl text-gray-400 hover:text-black transition-colors">
-                      {currentStation && currentStation.stationuuid === station.stationuuid && isPlaying ? '⏸' : '▶'}
-                    </button>
+                  
+                  {station.tags && (
+                    <p className="text-gray-500 text-xs mb-2 truncate">{station.tags}</p>
+                  )}
+                  
+                  <div className="flex justify-between items-center text-xs text-gray-400">
+                    <span>{station.votes || 0} votes</span>
+                    {station.bitrate && <span>{station.bitrate} kbps</span>}
                   </div>
-                </div>
-                
-                {station.tags && (
-                  <p className="text-gray-500 text-xs mb-2 truncate">{station.tags}</p>
-                )}
-                
-                <div className="flex justify-between items-center text-xs text-gray-400">
-                  <span>{station.votes || 0} votes</span>
-                  {station.bitrate && <span>{station.bitrate} kbps</span>}
                 </div>
               </div>
             ))}
@@ -669,25 +740,6 @@ function App() {
                 <p className="text-gray-500 mt-2">Try adjusting your search criteria</p>
               </>
             )}
-          </div>
-        )}
-
-        {/* Empty State */}
-        {!loading && displayedStations.length === 0 && (
-          <div className="text-center py-12">
-            <p className={`text-xl font-light transition-colors duration-300 ${
-              darkMode ? 'text-white' : 'text-gray-900'
-            }`}>
-              {showFavorites ? 'No favorite stations yet' : 'No stations found'}
-            </p>
-            <p className={`mt-2 transition-colors duration-300 ${
-              darkMode ? 'text-gray-400' : 'text-gray-500'
-            }`}>
-              {showFavorites 
-                ? 'Add stations to your favorites by clicking the ❤️ icon on any station card'
-                : 'Try adjusting your search criteria'
-              }
-            </p>
           </div>
         )}
       </div>

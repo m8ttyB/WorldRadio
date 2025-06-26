@@ -12,17 +12,28 @@ RUN yarn install --frozen-lockfile
 # Copy source code
 COPY frontend/ .
 
+# Create .env file with build-time variables
+ARG REACT_APP_BACKEND_URL
+RUN echo "REACT_APP_BACKEND_URL=${REACT_APP_BACKEND_URL}" > .env
+
 # Build the application
 RUN yarn build
 
 # Production stage
 FROM nginx:alpine
 
+# Install envsubst
+RUN apk add --no-cache bash
+
 # Copy built assets from builder stage
 COPY --from=builder /app/build /usr/share/nginx/html
 
 # Copy nginx configuration
 COPY nginx.conf /etc/nginx/nginx.conf
+
+# Copy and set up entrypoint script
+COPY docker-entrypoint.sh /docker-entrypoint.sh
+RUN chmod +x /docker-entrypoint.sh
 
 # Expose port
 EXPOSE 80
@@ -31,5 +42,5 @@ EXPOSE 80
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
     CMD curl -f http://localhost/ || exit 1
 
-# Start nginx
-CMD ["nginx", "-g", "daemon off;"]
+# Start nginx with environment variable replacement
+CMD ["/docker-entrypoint.sh"]
