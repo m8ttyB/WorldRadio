@@ -35,18 +35,7 @@ variable "github_branch" {
   default     = "main"
 }
 
-# Database Configuration
-variable "mongodb_uri" {
-  description = "MongoDB connection URI"
-  type        = string
-  sensitive   = true
-}
-
-variable "database_name" {
-  description = "Database name"
-  type        = string
-  default     = "global_radio"
-}
+# Database Configuration (removed - no longer needed)
 
 # Backend Service Configuration
 variable "backend_service_name" {

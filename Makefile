@@ -2,7 +2,7 @@
 # Automation for deployment, monitoring, and maintenance
 
 .PHONY: help deploy-all terraform-init terraform-plan terraform-apply terraform-destroy
-.PHONY: setup check-env deploy status logs health-check test-api backup-db
+.PHONY: setup check-env deploy status logs health-check test-api
 .PHONY: scale-backend update-env rollback monitor clean
 
 # Default target
@@ -51,14 +51,12 @@ setup: ## 🛠️ Initial project setup
 check-env: ## 🔍 Validate environment configuration
 	@echo "$(CYAN)Checking environment configuration...$(RESET)"
 	@if [ -z "$(RENDER_API_KEY)" ]; then echo "$(RED)❌ RENDER_API_KEY not set$(RESET)"; exit 1; fi
-	@if [ -z "$(MONGODB_URI)" ]; then echo "$(RED)❌ MONGODB_URI not set$(RESET)"; exit 1; fi
 	@if [ -z "$(GITHUB_REPO_URL)" ]; then echo "$(RED)❌ GITHUB_REPO_URL not set$(RESET)"; exit 1; fi
 	@echo "$(GREEN)✅ Environment configuration valid$(RESET)"
 
 env-status: ## 📊 Show environment variable status
 	@echo "$(CYAN)Environment Status:$(RESET)"
 	@echo "  RENDER_API_KEY: $(if $(RENDER_API_KEY),$(GREEN)✓ Set$(RESET),$(RED)✗ Missing$(RESET))"
-	@echo "  MONGODB_URI: $(if $(MONGODB_URI),$(GREEN)✓ Set$(RESET),$(RED)✗ Missing$(RESET))"
 	@echo "  GITHUB_REPO_URL: $(if $(GITHUB_REPO_URL),$(GREEN)✓ Set$(RESET),$(RED)✗ Missing$(RESET))"
 	@echo "  APP_NAME: $(or $(APP_NAME),Not set)"
 	@echo "  FRONTEND_DOMAIN: $(or $(FRONTEND_DOMAIN),Not set)"
@@ -137,19 +135,7 @@ scale-backend: ## ⚖️ Scale backend service (Usage: make scale-backend INSTAN
 	@$(SCRIPTS_DIR)/scale.sh backend $(or $(INSTANCES),1)
 	@echo "$(GREEN)✅ Backend scaled$(RESET)"
 
-##@ Database
-test-db: ## 🗄️ Test database connection
-	@echo "$(CYAN)Testing database connection...$(RESET)"
-	@$(SCRIPTS_DIR)/test-db.sh
-
-backup-db: ## 💾 Backup database
-	@echo "$(CYAN)Creating database backup...$(RESET)"
-	@$(SCRIPTS_DIR)/backup-db.sh
-	@echo "$(GREEN)✅ Database backup completed$(RESET)"
-
-db-status: ## 📊 Check database status
-	@echo "$(CYAN)Database Status:$(RESET)"
-	@$(SCRIPTS_DIR)/db-status.sh
+##@ Database (removed - application uses external Radio Browser API)
 
 ##@ Configuration
 update-env: ## 🔄 Update environment variables
@@ -231,7 +217,7 @@ info: ## ℹ️ Show deployment information
 	@echo "$(YELLOW)Services:$(RESET)"
 	@echo "  Frontend: Static Site (React)"
 	@echo "  Backend: Web Service (FastAPI)"
-	@echo "  Database: MongoDB Atlas"
+	@echo "  External API: Radio Browser API"
 	@echo ""
 	@echo "$(YELLOW)URLs:$(RESET)"
 	@echo "  Frontend: $$(cd $(TERRAFORM_DIR) 2>/dev/null && terraform output -raw frontend_url 2>/dev/null || echo 'Not deployed')"

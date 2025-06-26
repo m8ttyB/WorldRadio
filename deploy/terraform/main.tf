@@ -17,8 +17,6 @@ resource "render_web_service" "backend" {
 
   # Environment variables
   env_vars = merge({
-    MONGO_URL    = var.mongodb_uri
-    DB_NAME      = var.database_name
     ENVIRONMENT  = var.environment
     LOG_LEVEL    = "INFO"
     DEBUG        = "false"
@@ -99,7 +97,6 @@ resource "render_env_group" "global_radio" {
   env_vars = {
     APP_NAME    = var.app_name
     ENVIRONMENT = var.environment
-    DB_NAME     = var.database_name
     LOG_LEVEL   = "INFO"
   }
 }
