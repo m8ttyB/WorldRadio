@@ -9,15 +9,28 @@ services:
     volumes:
       - ./backend:/app
     restart: unless-stopped
+    networks:
+      - global-radio-network
 
   frontend:
     build:
       context: .
-      dockerfile: Dockerfile.frontend
-      args:
-        - REACT_APP_BACKEND_URL=http://localhost:8001
+      dockerfile: Dockerfile.frontend.dev
     ports:
-      - "3000:80"
+      - "3000:3000"
     environment:
-      - BACKEND_URL=backend:8001
+      - REACT_APP_BACKEND_URL=http://localhost:8001
+      - CHOKIDAR_USEPOLLING=true
+      - WATCHPACK_POLLING=true
+    depends_on:
+      - backend
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
     restart: unless-stopped
+    networks:
+      - global-radio-network
+
+networks:
+  global-radio-network:
+    driver: bridge

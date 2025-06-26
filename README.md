@@ -42,14 +42,32 @@ A minimalist worldwide radio station streaming website that allows users to disc
 
 ## 🛠️ Local Development Setup
 
-### 1. Clone the Repository
+### Option 1: Docker Compose (Recommended)
+
+The fastest way to get Global Radio running locally:
 
 ```bash
+# Clone the repository
 git clone <repository-url>
 cd global-radio
+
+# Start all services
+docker compose up -d
+
+# Test the setup
+./test-docker.sh
+
+# Access the application
+# Frontend: http://localhost:3000
+# Backend:  http://localhost:8001
+# API Docs: http://localhost:8001/docs
 ```
 
-### 2. Backend Setup
+**Troubleshooting**: If stations don't load, see [LOCAL_DEV.md](LOCAL_DEV.md) for detailed troubleshooting.
+
+### Option 2: Manual Setup
+
+#### 1. Backend Setup
 
 ```bash
 # Navigate to backend directory
